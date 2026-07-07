@@ -6,6 +6,7 @@ import { LoginPage } from "@/pages/LoginPage"
 import { SignupPage } from "@/pages/SignupPage"
 import { DashboardPage } from "@/pages/DashboardPage"
 import { ProjectsPage } from "@/pages/ProjectsPage"
+import { CalendarPage } from "@/pages/CalendarPage"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { AppLayout } from "@/components/layout/AppLayout"
 
@@ -27,7 +28,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/calendar" element={<div className="p-8"><h1 className="text-3xl font-bold">Calendar</h1></div>} />
+            <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/settings" element={<div className="p-8"><h1 className="text-3xl font-bold">Settings</h1></div>} />
           </Route>
         </Route>
