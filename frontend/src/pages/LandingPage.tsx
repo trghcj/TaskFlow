@@ -142,41 +142,13 @@ export function LandingPage() {
 
       <footer className="border-t bg-white py-12">
         <div className="container mx-auto max-w-6xl px-4 md:px-6">
-          <div className="grid gap-8 md:grid-cols-4">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-primary font-bold text-xl">
-                <CheckSquare className="h-6 w-6" /> TaskFlow
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Helping you plan, focus, and achieve more every day.
-              </p>
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="flex items-center gap-2 text-primary font-bold text-xl">
+              <CheckSquare className="h-6 w-6" /> TaskFlow
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="#" className="hover:text-primary">Features</Link></li>
-                <li><Link to="#" className="hover:text-primary">Integrations</Link></li>
-                <li><Link to="#" className="hover:text-primary">Changelog</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="#" className="hover:text-primary">Help Center</Link></li>
-                <li><Link to="#" className="hover:text-primary">Blog</Link></li>
-                <li><Link to="#" className="hover:text-primary">Tutorials</Link></li>
-                <li><Link to="#" className="hover:text-primary">Community</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="#" className="hover:text-primary">About Us</Link></li>
-                <li><Link to="#" className="hover:text-primary">Careers</Link></li>
-                <li><Link to="#" className="hover:text-primary">Privacy Policy</Link></li>
-                <li><Link to="#" className="hover:text-primary">Terms of Service</Link></li>
-              </ul>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Helping you plan, focus, and achieve more every day.
+            </p>
           </div>
           <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} TaskFlow Inc. All rights reserved.
