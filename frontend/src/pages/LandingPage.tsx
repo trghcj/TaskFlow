@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, CheckCircle2, Calendar, Users, BarChart3, Star, Check } from "lucide-react"
+import { ArrowRight, CheckCircle2, Calendar, Users, BarChart3, Star, Check, CheckSquare } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export function LandingPage() {
