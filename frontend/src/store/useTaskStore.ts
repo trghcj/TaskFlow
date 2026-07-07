@@ -17,6 +17,10 @@ interface TaskState {
   addTask: (task: Omit<Task, 'id'>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   moveTask: (id: string, newStatus: TaskStatus) => void;
+  isModalOpen: boolean;
+  selectedTaskId: string | null;
+  openModal: (taskId?: string | null) => void;
+  closeModal: () => void;
 }
 
 const DUMMY_TASKS: Task[] = [
@@ -38,4 +42,8 @@ export const useTaskStore = create<TaskState>((set) => ({
   moveTask: (id, newStatus) => set((state) => ({
     tasks: state.tasks.map(t => t.id === id ? { ...t, status: newStatus } : t)
   })),
+  isModalOpen: false,
+  selectedTaskId: null,
+  openModal: (taskId = null) => set({ isModalOpen: true, selectedTaskId: taskId }),
+  closeModal: () => set({ isModalOpen: false, selectedTaskId: null }),
 }));
