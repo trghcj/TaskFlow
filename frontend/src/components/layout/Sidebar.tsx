@@ -5,11 +5,13 @@ import {
   CalendarDays, 
   LayoutDashboard, 
   Settings, 
+  PieChart,
   ChevronLeft,
   ChevronRight,
   Plus
 } from "lucide-react"
 import { NavLink } from "react-router-dom"
+import { useTaskStore } from "@/store/useTaskStore"
 
 interface SidebarProps {
   isOpen: boolean
@@ -17,10 +19,12 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
+  const { openModal } = useTaskStore()
   const navItems = [
     { icon: Inbox, label: "Inbox", href: "/dashboard" },
     { icon: LayoutDashboard, label: "Projects", href: "/projects" },
     { icon: CalendarDays, label: "Calendar", href: "/calendar" },
+    { icon: PieChart, label: "Analytics", href: "/analytics" },
     { icon: Settings, label: "Settings", href: "/settings" },
   ]
 
@@ -50,6 +54,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       <div className="px-3 py-4 flex-1 space-y-1">
         {/* Quick Add Button */}
         <Button 
+          onClick={() => openModal()}
           className={cn(
             "w-full justify-start gap-2 mb-6 bg-primary/10 text-primary hover:bg-primary/20 shadow-none border-none",
             !isOpen && "justify-center px-0"

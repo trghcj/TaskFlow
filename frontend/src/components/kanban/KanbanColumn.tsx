@@ -5,6 +5,7 @@ import { TaskCard } from './TaskCard';
 import { cn } from '@/lib/utils';
 import { MoreHorizontal, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTaskStore } from '@/store/useTaskStore';
 
 interface KanbanColumnProps {
   id: string;
@@ -28,7 +29,7 @@ export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+          <Button onClick={() => useTaskStore.getState().openModal()} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
             <Plus className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">

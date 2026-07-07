@@ -2,9 +2,12 @@ import { useState } from "react"
 import { Outlet } from "react-router-dom"
 import { Sidebar } from "./Sidebar"
 import { TopNavbar } from "./TopNavbar"
+import { TaskDetailsModal } from "@/components/kanban/TaskDetailsModal"
+import { useTaskStore } from "@/store/useTaskStore"
 
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const { isModalOpen, closeModal, selectedTaskId } = useTaskStore()
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
@@ -18,6 +21,13 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+      
+      {/* Global Modals */}
+      <TaskDetailsModal 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+        taskId={selectedTaskId} 
+      />
     </div>
   )
 }

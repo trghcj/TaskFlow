@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/store/useTaskStore';
 import { cn } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
+import { useTaskStore } from '@/store/useTaskStore';
 
 interface TaskCardProps {
   task: Task;
@@ -33,12 +34,15 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
     high: "bg-red-100 text-red-700 border-red-200"
   };
 
+  const { openModal } = useTaskStore();
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
+      onClick={() => openModal(task.id)}
       className={cn(
         "group relative flex cursor-grab flex-col gap-3 rounded-xl border bg-card p-4 shadow-sm transition-all hover:shadow-md active:cursor-grabbing",
         isDragging && "opacity-50",
