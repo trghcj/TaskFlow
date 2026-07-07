@@ -1,6 +1,6 @@
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Task } from '@/store/useTaskStore';
+import type { Task } from '@/store/useTaskStore';
 import { TaskCard } from './TaskCard';
 import { cn } from '@/lib/utils';
 import { MoreHorizontal, Plus } from 'lucide-react';

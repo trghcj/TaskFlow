@@ -13,7 +13,7 @@ import {
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskCard } from './TaskCard';
-import { useTaskStore, Task, TaskStatus } from '@/store/useTaskStore';
+import { useTaskStore, type Task, type TaskStatus } from '@/store/useTaskStore';
 
 const COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'todo', title: 'To Do' },
