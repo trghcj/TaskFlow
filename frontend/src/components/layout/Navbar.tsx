@@ -36,7 +36,7 @@ export function Navbar() {
             <Link to="/login">Log in</Link>
           </Button>
           <Button asChild>
-            <Link to="/signup">Start for free</Link>
+            <Link to="/signup">Sign up</Link>
           </Button>
         </div>
       </div>

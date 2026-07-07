@@ -27,21 +27,9 @@ export function LandingPage() {
                   </p>
                 </div>
                 
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  <div className="flex text-amber-400">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Star key={i} className="h-5 w-5 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-muted-foreground ml-2">128K+ reviews</span>
-                </div>
-
-                <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="flex flex-col gap-4 sm:flex-row pt-4">
                   <Button size="lg" className="px-8 text-base h-14" asChild>
-                    <Link to="/signup">Start for free</Link>
-                  </Button>
-                  <Button size="lg" variant="ghost" className="px-8 text-base h-14 gap-2">
-                    Learn more <ArrowRight className="h-4 w-4" />
+                    <Link to="/signup">Join and start managing</Link>
                   </Button>
                 </div>
               </div>
