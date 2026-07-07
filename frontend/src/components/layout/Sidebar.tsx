@@ -5,6 +5,7 @@ import {
   CalendarDays, 
   LayoutDashboard, 
   Settings, 
+  PieChart,
   ChevronLeft,
   ChevronRight,
   Plus
@@ -23,6 +24,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     { icon: Inbox, label: "Inbox", href: "/dashboard" },
     { icon: LayoutDashboard, label: "Projects", href: "/projects" },
     { icon: CalendarDays, label: "Calendar", href: "/calendar" },
+    { icon: PieChart, label: "Analytics", href: "/analytics" },
     { icon: Settings, label: "Settings", href: "/settings" },
   ]
 

@@ -7,6 +7,7 @@ import { SignupPage } from "@/pages/SignupPage"
 import { DashboardPage } from "@/pages/DashboardPage"
 import { ProjectsPage } from "@/pages/ProjectsPage"
 import { CalendarPage } from "@/pages/CalendarPage"
+import { AnalyticsPage } from "@/pages/AnalyticsPage"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { AppLayout } from "@/components/layout/AppLayout"
 
@@ -29,6 +30,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/settings" element={<div className="p-8"><h1 className="text-3xl font-bold">Settings</h1></div>} />
           </Route>
         </Route>
