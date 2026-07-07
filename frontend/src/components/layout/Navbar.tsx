@@ -29,12 +29,7 @@ export function Navbar() {
           >
             Resources
           </Link>
-          <Link
-            to="#pricing"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Pricing
-          </Link>
+
         </nav>
         <div className="flex items-center gap-4">
           <Button variant="ghost" className="hidden sm:inline-flex" asChild>

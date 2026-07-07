@@ -137,50 +137,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section className="py-24 bg-background" id="pricing">
-          <div className="container mx-auto max-w-5xl px-4 md:px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Simple, transparent pricing</h2>
-              <p className="mt-4 text-lg text-muted-foreground">Choose the plan that's right for you or your team.</p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <div className="rounded-3xl border bg-card p-8 shadow-sm">
-                <h3 className="text-2xl font-bold">Free</h3>
-                <p className="text-muted-foreground mt-2">Perfect for individuals.</p>
-                <div className="my-6">
-                  <span className="text-5xl font-extrabold">$0</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary" /> Up to 5 projects</li>
-                  <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary" /> Basic task management</li>
-                  <li className="flex items-center gap-3"><Check className="h-5 w-5 text-primary" /> 1-week activity history</li>
-                </ul>
-                <Button className="w-full" variant="outline" size="lg">Get Started</Button>
-              </div>
-              
-              <div className="rounded-3xl border bg-primary text-primary-foreground p-8 shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4">
-                  <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">POPULAR</span>
-                </div>
-                <h3 className="text-2xl font-bold">Pro</h3>
-                <p className="text-primary-foreground/80 mt-2">For power users and teams.</p>
-                <div className="my-6">
-                  <span className="text-5xl font-extrabold">$8</span>
-                  <span className="text-primary-foreground/80">/month</span>
-                </div>
-                <ul className="space-y-4 mb-8 text-primary-foreground/90">
-                  <li className="flex items-center gap-3"><Check className="h-5 w-5" /> Unlimited projects</li>
-                  <li className="flex items-center gap-3"><Check className="h-5 w-5" /> Advanced analytics</li>
-                  <li className="flex items-center gap-3"><Check className="h-5 w-5" /> Unlimited history & team collaboration</li>
-                </ul>
-                <Button className="w-full bg-white text-primary hover:bg-white/90" size="lg">Upgrade to Pro</Button>
-              </div>
-            </div>
-          </div>
-        </section>
+
       </main>
 
       <footer className="border-t bg-white py-12">
@@ -199,7 +156,6 @@ export function LandingPage() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link to="#" className="hover:text-primary">Features</Link></li>
                 <li><Link to="#" className="hover:text-primary">Integrations</Link></li>
-                <li><Link to="#" className="hover:text-primary">Pricing</Link></li>
                 <li><Link to="#" className="hover:text-primary">Changelog</Link></li>
               </ul>
             </div>
