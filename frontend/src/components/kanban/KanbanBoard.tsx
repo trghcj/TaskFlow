@@ -7,8 +7,8 @@ import {
   PointerSensor, 
   useSensor, 
   useSensors, 
-  DragStartEvent, 
-  DragEndEvent 
+  type DragStartEvent, 
+  type DragEndEvent 
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { KanbanColumn } from './KanbanColumn';
