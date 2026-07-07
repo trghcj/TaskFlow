@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTaskStore, type Task, type TaskStatus, type TaskPriority } from "@/store/useTaskStore";
+import { useTaskStore } from "@/store/useTaskStore";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
