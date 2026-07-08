@@ -20,7 +20,7 @@ interface SettingsState {
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       theme: 'system',
       emailNotifications: true,
       dueDateReminders: true,
@@ -37,7 +37,7 @@ export const useSettingsStore = create<SettingsState>()(
       },
       setTimezone: (timezone) => set({ timezone }),
       setAllSettings: (settings) => {
-        if (settings.language && settings.language !== set.language) {
+        if (settings.language && settings.language !== get().language) {
            i18n.changeLanguage(settings.language);
         }
         set((state) => ({ ...state, ...settings }));

@@ -1,7 +1,8 @@
 import { Search, Bell, Menu, LogOut, Settings, BellRing } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/store/useAuthStore"
-import { useTaskStore } from "@/store/useTaskStore"
+import { Task } from "@/store/useTaskStore"
+import { useTasks } from "@/hooks/useTasks"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -25,16 +26,16 @@ interface TopNavbarProps {
 
 export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
   const { user, signOut } = useAuthStore()
-  const { tasks } = useTaskStore()
+  const { data: tasks = [] } = useTasks()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState("")
 
   const filteredTasks = searchQuery.trim() === "" 
     ? [] 
-    : tasks.filter(task => task.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : tasks.filter((task: Task) => task.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
-  const handleSelectTask = (taskId: string) => {
+  const handleSelectTask = (_taskId: string) => {
     setSearchQuery("")
     // If we had a task detail view, we'd navigate there. For now, go to dashboard.
     navigate("/dashboard")
@@ -65,7 +66,7 @@ export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
         {searchQuery.trim() !== "" && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-card border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
             {filteredTasks.length > 0 ? (
-              filteredTasks.map(task => (
+              filteredTasks.map((task: Task) => (
                 <button
                   key={task.id}
                   onClick={() => handleSelectTask(task.id)}
