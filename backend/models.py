@@ -36,6 +36,8 @@ class UserSettings(Base):
     email_notifications = Column(Boolean, default=True)
     due_date_reminders = Column(Boolean, default=True)
     product_updates = Column(Boolean, default=False)
+    language = Column(String, default="English (US)")
+    timezone = Column(String, default="Pacific Time (PT)")
     
     user = relationship("User", back_populates="settings")
 

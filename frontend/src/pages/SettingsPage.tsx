@@ -1,17 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { updateProfile } from "firebase/auth";
+import { storage } from "@/lib/firebase";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, User, Bell, Palette } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LogOut, User, Bell, Palette, Loader2 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getSettings, updateSettings } from "@/api/settings";
 
 export function SettingsPage() {
-  const { user, signOut } = useAuthStore();
+  const { user, signOut, updateUser } = useAuthStore();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { 
     theme, 
     setTheme, 
@@ -21,6 +27,10 @@ export function SettingsPage() {
     setDueDateReminders,
     productUpdates,
     setProductUpdates,
+    language,
+    setLanguage,
+    timezone,
+    setTimezone,
     setAllSettings
   } = useSettingsStore();
 
@@ -41,6 +51,8 @@ export function SettingsPage() {
         emailNotifications: serverSettings.email_notifications,
         dueDateReminders: serverSettings.due_date_reminders,
         productUpdates: serverSettings.product_updates,
+        language: serverSettings.language || "English (US)",
+        timezone: serverSettings.timezone || "Pacific Time (PT)",
       });
     }
   }, [serverSettings, setAllSettings]);
@@ -64,6 +76,35 @@ export function SettingsPage() {
   const handleProductUpdatesChange = (checked: boolean) => {
     setProductUpdates(checked);
     mutation.mutate({ product_updates: checked });
+  };
+
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value);
+    mutation.mutate({ language: value });
+  };
+
+  const handleTimezoneChange = (value: string) => {
+    setTimezone(value);
+    mutation.mutate({ timezone: value });
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    try {
+      setIsUploading(true);
+      const storageRef = ref(storage, `avatars/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const photoURL = await getDownloadURL(storageRef);
+      
+      await updateProfile(user, { photoURL });
+      updateUser({ photoURL });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -112,7 +153,21 @@ export function SettingsPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Button variant="outline" disabled>Change Photo</Button>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange}
+                  />
+                  <Button 
+                    variant="outline" 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Change Photo
+                  </Button>
                 </div>
               </div>
 
@@ -165,11 +220,31 @@ export function SettingsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Language</Label>
-                  <Input defaultValue="English (US)" disabled />
+                  <Select value={language} onValueChange={handleLanguageChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="English (US)">English (US)</SelectItem>
+                      <SelectItem value="Spanish">Spanish</SelectItem>
+                      <SelectItem value="French">French</SelectItem>
+                      <SelectItem value="German">German</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label>Timezone</Label>
-                  <Input defaultValue="Pacific Time (PT)" disabled />
+                  <Select value={timezone} onValueChange={handleTimezoneChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Timezone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Pacific Time (PT)">Pacific Time (PT)</SelectItem>
+                      <SelectItem value="Eastern Time (ET)">Eastern Time (ET)</SelectItem>
+                      <SelectItem value="Coordinated Universal Time (UTC)">Coordinated Universal Time (UTC)</SelectItem>
+                      <SelectItem value="Central European Time (CET)">Central European Time (CET)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

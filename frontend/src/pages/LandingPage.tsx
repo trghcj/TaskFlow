@@ -226,7 +226,7 @@ export function LandingPage() {
             </p>
           </div>
           <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} TaskFlow Inc. All rights reserved.
+            © {new Date().getFullYear()} TaskFlow - Divyansh singh. All rights reserved.
           </div>
         </div>
       </footer>
