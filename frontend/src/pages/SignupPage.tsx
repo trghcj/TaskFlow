@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/useAuthStore"
-import { CheckSquare, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Link, Navigate } from "react-router-dom"
 import { useState } from "react"
 
@@ -33,7 +33,7 @@ export function SignupPage() {
       <div className="w-full max-w-sm space-y-8">
         <div className="flex flex-col items-center space-y-2 text-center">
           <Link to="/" className="flex items-center gap-2 text-primary font-bold text-2xl mb-4">
-            <CheckSquare className="h-8 w-8" /> TaskFlow
+            <img src="/taskflow_icon.png" alt="TaskFlow Logo" className="h-8 w-8 object-contain rounded-lg" /> TaskFlow
           </Link>
           <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
           <p className="text-muted-foreground">
