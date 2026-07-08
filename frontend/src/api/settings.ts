@@ -1,4 +1,4 @@
-import { api } from './index';
+import apiClient from './axios';
 
 export interface UserSettings {
   id: string;
@@ -10,11 +10,11 @@ export interface UserSettings {
 }
 
 export const getSettings = async (): Promise<UserSettings> => {
-  const response = await api.get<UserSettings>('/settings');
+  const response = await apiClient.get<UserSettings>('/settings');
   return response.data;
 };
 
 export const updateSettings = async (settings: Partial<UserSettings>): Promise<UserSettings> => {
-  const response = await api.patch<UserSettings>('/settings', settings);
+  const response = await apiClient.patch<UserSettings>('/settings', settings);
   return response.data;
 };
