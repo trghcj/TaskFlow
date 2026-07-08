@@ -12,7 +12,7 @@ app = FastAPI(title="TaskFlow API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # For production, restrict this to frontend URL
+    allow_origins=["*"],  # Allows all origins (including Vercel and Localhost)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
