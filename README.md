@@ -18,6 +18,16 @@ TaskFlow is a modern SaaS task management platform that helps individuals and te
 - PostgreSQL (Supabase)
 - Firebase Admin SDK (JWT Validation)
 
+## Key Features
+
+- **Dynamic Kanban Board**: Drag-and-drop tasks across statuses with real-time backend synchronization.
+- **Calendar & Timezones**: Native timezone conversion using `date-fns-tz` to ensure deadlines are accurate regardless of user location.
+- **Analytics Dashboard**: Interactive charts built with `Recharts` to visualize productivity, completion rates, and priority distribution.
+- **Global Search**: Real-time filtering of tasks directly from the navigation bar.
+- **In-App & Email Notifications**: A background Python scheduler (APScheduler) generates real-time in-app notifications and dispatches digest emails for tasks due soon.
+- **Internationalization (i18n)**: Seamless translation of the UI into English, Spanish, French, and German using `react-i18next`.
+- **Comprehensive Authentication**: Support for both standard Email/Password accounts and Google OAuth via Firebase, including dynamic Profile Management.
+
 ## Architecture Flowchart
 
 ```mermaid
