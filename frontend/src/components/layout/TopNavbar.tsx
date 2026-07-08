@@ -1,7 +1,11 @@
 import { Search, Bell, Menu, LogOut, Settings, BellRing } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/store/useAuthStore"
-import { Link } from "react-router-dom"
+import type { Task } from "@/store/useTaskStore"
+import { useTasks } from "@/hooks/useTasks"
+import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +26,20 @@ interface TopNavbarProps {
 
 export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
   const { user, signOut } = useAuthStore()
+  const { data: tasks = [] } = useTasks()
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const filteredTasks = searchQuery.trim() === "" 
+    ? [] 
+    : tasks.filter((task: Task) => task.title.toLowerCase().includes(searchQuery.toLowerCase()))
+
+  const handleSelectTask = (_taskId: string) => {
+    setSearchQuery("")
+    // If we had a task detail view, we'd navigate there. For now, go to dashboard.
+    navigate("/dashboard")
+  }
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
@@ -40,9 +58,31 @@ export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <input 
           type="search" 
-          placeholder="Search tasks..." 
+          placeholder={t('common.searchPlaceholder')}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full bg-secondary/20 rounded-lg border-none pl-9 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-shadow"
         />
+        {searchQuery.trim() !== "" && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-card border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task: Task) => (
+                <button
+                  key={task.id}
+                  onClick={() => handleSelectTask(task.id)}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-secondary/50 focus:bg-secondary/50 outline-none flex flex-col"
+                >
+                  <span className="font-medium">{task.title}</span>
+                  {task.due_date && <span className="text-xs text-muted-foreground">Due: {task.due_date}</span>}
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-sm text-muted-foreground text-center">
+                {t('common.noResults')}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="ml-auto flex items-center gap-4">
@@ -98,15 +138,15 @@ export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="/app/settings" className="cursor-pointer flex items-center w-full">
+              <Link to="/settings" className="cursor-pointer flex items-center w-full">
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>{t('common.settings')}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOut} className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50 cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Sign out</span>
+              <span>{t('common.signOut')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

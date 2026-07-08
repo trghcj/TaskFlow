@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import { NavLink } from "react-router-dom"
 import { useTaskStore } from "@/store/useTaskStore"
+import { useTranslation } from "react-i18next"
 
 interface SidebarProps {
   isOpen: boolean
@@ -20,12 +21,13 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const { openModal } = useTaskStore()
+  const { t } = useTranslation()
   const navItems = [
-    { icon: Inbox, label: "Inbox", href: "/dashboard" },
-    { icon: LayoutDashboard, label: "Projects", href: "/projects" },
-    { icon: CalendarDays, label: "Calendar", href: "/calendar" },
-    { icon: PieChart, label: "Analytics", href: "/analytics" },
-    { icon: Settings, label: "Settings", href: "/settings" },
+    { icon: Inbox, label: t('common.dashboard'), href: "/dashboard" },
+    { icon: LayoutDashboard, label: t('common.projects'), href: "/projects" },
+    { icon: CalendarDays, label: t('common.calendar'), href: "/calendar" },
+    { icon: PieChart, label: t('common.analytics'), href: "/analytics" },
+    { icon: Settings, label: t('common.settings'), href: "/settings" },
   ]
 
   return (

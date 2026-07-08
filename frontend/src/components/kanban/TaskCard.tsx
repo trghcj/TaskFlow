@@ -4,6 +4,7 @@ import type { Task } from '@/store/useTaskStore';
 import { cn } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 import { useTaskStore } from '@/store/useTaskStore';
+import { formatUserDate } from '@/lib/dateUtils';
 
 interface TaskCardProps {
   task: Task;
@@ -65,7 +66,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
           {task.due_date && (
             <div className="flex items-center text-xs text-muted-foreground">
               <Calendar className="mr-1 h-3 w-3" />
-              {new Date(task.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              {formatUserDate(task.due_date, 'MMM d')}
             </div>
           )}
         </div>

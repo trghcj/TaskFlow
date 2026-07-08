@@ -19,8 +19,15 @@ cloudinary.config(
   api_secret = os.environ.get("CLOUDINARY_API_SECRET")
 )
 
+import alembic.config
+import alembic.command
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    print("Running database migrations...")
+    alembic_cfg = alembic.config.Config("alembic.ini")
+    alembic.command.upgrade(alembic_cfg, "head")
+
     print("Starting background scheduler...")
     scheduler.start()
     yield
