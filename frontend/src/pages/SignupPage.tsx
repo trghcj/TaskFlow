@@ -1,13 +1,31 @@
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { useAuthStore } from "@/store/useAuthStore"
-import { CheckSquare } from "lucide-react"
+import { CheckSquare, Loader2 } from "lucide-react"
 import { Link, Navigate } from "react-router-dom"
+import { useState } from "react"
 
 export function SignupPage() {
-  const { signInWithGoogle, user } = useAuthStore()
+  const { signInWithGoogle, signUpWithEmail, user } = useAuthStore()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   if (user) {
     return <Navigate to="/dashboard" replace />
+  }
+
+  const handleEmailSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setIsLoading(true)
+    try {
+      await signUpWithEmail(email, password)
+    } catch (err: any) {
+      setError(err.message || "Failed to sign up")
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -24,10 +42,47 @@ export function SignupPage() {
         </div>
         
         <div className="bg-card border rounded-2xl p-6 shadow-sm space-y-4">
+          <form onSubmit={handleEmailSignup} className="space-y-4">
+            <div className="space-y-2">
+              <Input 
+                type="email" 
+                placeholder="Email address" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Input 
+                type="password" 
+                placeholder="Password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+              />
+            </div>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <Button type="submit" className="w-full h-10" disabled={isLoading}>
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Sign up
+            </Button>
+          </form>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+
           <Button 
-            className="w-full h-12 text-base font-medium" 
+            className="w-full h-10 text-base font-medium" 
             variant="outline"
             onClick={signInWithGoogle}
+            type="button"
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
