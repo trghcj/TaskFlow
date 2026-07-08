@@ -8,9 +8,7 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <CheckSquare className="h-5 w-5 text-white" />
-            </div>
+            <img src="/taskflow_icon.png" alt="TaskFlow Logo" className="h-8 w-8 object-contain rounded-lg" />
             <span className="text-xl font-bold tracking-tight text-foreground">
               taskflow
             </span>
