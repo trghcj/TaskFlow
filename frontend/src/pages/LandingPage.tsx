@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Calendar, Users, BarChart3, Star, Zap, Shield, ArrowRight } from "lucide-react"
+import { CheckCircle2, Calendar, Users, BarChart3, Zap, Shield, ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export function LandingPage() {
@@ -188,75 +188,6 @@ export function LandingPage() {
                      <div className="h-6 w-16 rounded-full bg-red-100 text-red-700 text-[10px] font-bold flex items-center justify-center">URGENT</div>
                    </div>
                  </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials */}
-        <section className="border-t bg-slate-900 py-24 text-slate-50 relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -z-10 h-[800px] w-[1000px] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl opacity-30" />
-          
-          <div className="container mx-auto max-w-6xl px-4 md:px-6">
-            <div className="text-center space-y-4 mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Loved by productive people</h2>
-              <p className="text-slate-400 max-w-[600px] mx-auto text-lg">
-                Don't just take our word for it. See what our users have to say.
-              </p>
-            </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              <div className="flex flex-col gap-4 p-8 rounded-3xl bg-slate-800/50 border border-slate-700 backdrop-blur-sm">
-                <div className="flex text-amber-400">
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                </div>
-                <p className="text-slate-300 flex-1">"TaskFlow completely changed how our small design agency operates. The interface is gorgeous and it gets out of your way."</p>
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
-                  <div className="h-10 w-10 rounded-full bg-slate-600 flex items-center justify-center font-bold">S</div>
-                  <div>
-                    <div className="font-medium text-sm">Sarah Jenkins</div>
-                    <div className="text-xs text-slate-400">Creative Director</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex flex-col gap-4 p-8 rounded-3xl bg-slate-800/50 border border-slate-700 backdrop-blur-sm">
-                <div className="flex text-amber-400">
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                </div>
-                <p className="text-slate-300 flex-1">"I've tried every productivity app on the market. TaskFlow is the only one I've stuck with for more than a month."</p>
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
-                  <div className="h-10 w-10 rounded-full bg-slate-600 flex items-center justify-center font-bold">M</div>
-                  <div>
-                    <div className="font-medium text-sm">Marcus Chen</div>
-                    <div className="text-xs text-slate-400">Software Engineer</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-4 p-8 rounded-3xl bg-slate-800/50 border border-slate-700 backdrop-blur-sm">
-                <div className="flex text-amber-400">
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                  <Star className="h-5 w-5 fill-current" />
-                </div>
-                <p className="text-slate-300 flex-1">"The daily email reminders are a lifesaver. I no longer have to worry about missing deadlines for my classes."</p>
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
-                  <div className="h-10 w-10 rounded-full bg-slate-600 flex items-center justify-center font-bold">E</div>
-                  <div>
-                    <div className="font-medium text-sm">Elena Rodriguez</div>
-                    <div className="text-xs text-slate-400">Graduate Student</div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
