@@ -120,21 +120,4 @@ VITE_API_URL="http://localhost:8000"
 npm run dev
 ```
 
-## Deployment Guide
 
-### Deploying the Backend (Render)
-1. Create a new Web Service on [Render](https://render.com) and connect your GitHub repository.
-2. Set the Root Directory to `backend`.
-3. Set the Build Command to `pip install -r requirements.txt`.
-4. Set the Start Command to `uvicorn main:app --host 0.0.0.0 --port 10000`.
-5. Add your Environment Variables:
-   - `DATABASE_URL`: Your Supabase connection string.
-   - `FIREBASE_SERVICE_ACCOUNT_JSON`: Paste the raw JSON string from your `firebase-service-account.json` file. (The app will automatically detect this env variable if the file is missing).
-
-### Deploying the Frontend (Vercel)
-1. Import your project into [Vercel](https://vercel.com).
-2. Set the Root Directory to `frontend`.
-3. The Build Command (`npm run build`) and Output Directory (`dist`) should be auto-detected.
-4. Add all your `VITE_FIREBASE_*` environment variables.
-5. Set `VITE_API_URL` to the live URL of your deployed Render backend (e.g., `https://taskflow-api.onrender.com`).
-6. Deploy!
