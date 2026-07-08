@@ -47,12 +47,16 @@ class UserSettingsBase(BaseModel):
     email_notifications: bool = True
     due_date_reminders: bool = True
     product_updates: bool = False
+    language: str = "English (US)"
+    timezone: str = "Pacific Time (PT)"
 
 class UserSettingsUpdate(BaseModel):
     theme: Optional[str] = None
     email_notifications: Optional[bool] = None
     due_date_reminders: Optional[bool] = None
     product_updates: Optional[bool] = None
+    language: Optional[str] = None
+    timezone: Optional[str] = None
 
 class UserSettingsResponse(UserSettingsBase):
     id: str

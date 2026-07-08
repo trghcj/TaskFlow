@@ -8,6 +8,7 @@ interface AuthState {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   initializeAuth: () => void;
+  updateUser: (userUpdates: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -38,4 +39,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ user, loading: false });
     });
   },
+
+  updateUser: (userUpdates) => {
+    set((state) => {
+      if (!state.user) return state;
+      // Object.assign allows us to update the User object while keeping its prototype/methods intact
+      const updatedUser = Object.assign(state.user, userUpdates);
+      return { user: updatedUser };
+    });
+  }
 }));
