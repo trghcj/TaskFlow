@@ -98,7 +98,7 @@ export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="/app/settings" className="cursor-pointer flex items-center w-full">
+              <Link to="/settings" className="cursor-pointer flex items-center w-full">
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </Link>
