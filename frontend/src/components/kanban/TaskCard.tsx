@@ -2,9 +2,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/store/useTaskStore';
 import { cn } from '@/lib/utils';
-import { Calendar } from 'lucide-react';
+import { Calendar, Trash2 } from 'lucide-react';
 import { useTaskStore } from '@/store/useTaskStore';
 import { formatUserDate } from '@/lib/dateUtils';
+import { useDeleteTask } from '@/hooks/useTasks';
 
 interface TaskCardProps {
   task: Task;
@@ -36,6 +37,12 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
   };
 
   const { openModal } = useTaskStore();
+  const { mutate: deleteTask } = useDeleteTask();
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteTask(task.id);
+  };
 
   return (
     <div
@@ -52,6 +59,13 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
     >
       <div className="flex items-start justify-between gap-2">
         <h4 className="text-sm font-medium leading-tight">{task.title}</h4>
+        <button 
+          onClick={handleDelete}
+          className="text-muted-foreground hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+          title="Delete Task"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
       </div>
       
       {task.description && (
