@@ -13,7 +13,8 @@ import {
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskCard } from './TaskCard';
-import { useTaskStore, type Task, type TaskStatus } from '@/store/useTaskStore';
+import { type Task, type TaskStatus } from '@/store/useTaskStore';
+import { useTasks, useUpdateTask } from '@/hooks/useTasks';
 
 const COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'todo', title: 'To Do' },
@@ -23,7 +24,8 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
 ];
 
 export function KanbanBoard() {
-  const { tasks, moveTask } = useTaskStore();
+  const { data: tasks = [] } = useTasks();
+  const { mutate: updateTask } = useUpdateTask();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
@@ -50,14 +52,14 @@ export function KanbanBoard() {
     const isOverColumn = COLUMNS.some(col => col.id === overId);
     
     if (isOverColumn) {
-      moveTask(taskId, overId as TaskStatus);
+      updateTask({ id: taskId, updates: { status: overId as TaskStatus } });
       return;
     }
 
     // Check if dropping over a task
     const overTask = tasks.find(t => t.id === overId);
     if (overTask && overTask.status !== (activeTask?.status || 'todo')) {
-      moveTask(taskId, overTask.status);
+      updateTask({ id: taskId, updates: { status: overTask.status } });
     }
   };
 

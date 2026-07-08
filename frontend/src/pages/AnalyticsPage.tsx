@@ -1,4 +1,4 @@
-import { useTaskStore } from '@/store/useTaskStore';
+import { useTasks } from '@/hooks/useTasks';
 import { 
   BarChart, 
   Bar, 
@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 
 export function AnalyticsPage() {
-  const { tasks } = useTaskStore();
+  const { data: tasks = [] } = useTasks();
 
   // Data processing for Status Pie Chart
   const statusCounts = {
