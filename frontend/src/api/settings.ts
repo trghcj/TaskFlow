@@ -7,6 +7,8 @@ export interface UserSettings {
   email_notifications: boolean;
   due_date_reminders: boolean;
   product_updates: boolean;
+  language: string;
+  timezone: string;
 }
 
 export const getSettings = async (): Promise<UserSettings> => {
