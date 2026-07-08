@@ -1,7 +1,7 @@
 import { Search, Bell, Menu, LogOut, Settings, BellRing } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/store/useAuthStore"
-import { Task } from "@/store/useTaskStore"
+import type { Task } from "@/store/useTaskStore"
 import { useTasks } from "@/hooks/useTasks"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
