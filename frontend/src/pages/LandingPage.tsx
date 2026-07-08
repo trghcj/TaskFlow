@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Calendar, Users, BarChart3, CheckSquare } from "lucide-react"
+import { CheckCircle2, Calendar, Users, BarChart3 } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export function LandingPage() {
@@ -132,7 +132,7 @@ export function LandingPage() {
         <div className="container mx-auto max-w-6xl px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="flex items-center gap-2 text-primary font-bold text-xl">
-              <CheckSquare className="h-6 w-6" /> TaskFlow
+              <img src="/taskflow_icon.png" alt="TaskFlow Logo" className="h-8 w-8 object-contain rounded-lg" /> TaskFlow
             </div>
             <p className="text-sm text-muted-foreground">
               Helping you plan, focus, and achieve more every day.

@@ -38,6 +38,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       <div className="flex h-14 items-center justify-between px-4 py-4">
         {isOpen && (
           <div className="flex items-center gap-2 font-bold text-lg text-primary overflow-hidden">
+            <img src="/taskflow_icon.png" alt="TaskFlow Logo" className="h-6 w-6 object-contain rounded-md" />
             TaskFlow
           </div>
         )}
