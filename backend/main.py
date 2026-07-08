@@ -7,8 +7,18 @@ from database import engine, Base, get_db
 import models
 import schemas
 from auth import get_current_user
+from scheduler import scheduler
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="TaskFlow API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Starting background scheduler...")
+    scheduler.start()
+    yield
+    print("Shutting down background scheduler...")
+    scheduler.shutdown()
+
+app = FastAPI(title="TaskFlow API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -58,3 +68,28 @@ def delete_task(task_id: str, current_user: models.User = Depends(get_current_us
     db.delete(db_task)
     db.commit()
     return None
+
+@app.get("/settings", response_model=schemas.UserSettingsResponse)
+def get_settings(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == current_user.id).first()
+    if not settings:
+        settings = models.UserSettings(user_id=current_user.id)
+        db.add(settings)
+        db.commit()
+        db.refresh(settings)
+    return settings
+
+@app.patch("/settings", response_model=schemas.UserSettingsResponse)
+def update_settings(settings_update: schemas.UserSettingsUpdate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    settings = db.query(models.UserSettings).filter(models.UserSettings.user_id == current_user.id).first()
+    if not settings:
+        settings = models.UserSettings(user_id=current_user.id)
+        db.add(settings)
+    
+    update_data = settings_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(settings, key, value)
+        
+    db.commit()
+    db.refresh(settings)
+    return settings

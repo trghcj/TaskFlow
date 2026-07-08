@@ -78,51 +78,63 @@ export function AnalyticsPage() {
       {/* Charts Grid */}
       <div className="grid gap-6 md:grid-cols-2 mt-4">
         {/* Status Pie Chart */}
-        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col">
+        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col min-h-[400px]">
           <h3 className="font-semibold mb-6">Task Distribution by Status</h3>
-          <div className="h-[300px] w-full flex-1">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={statusData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {statusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend verticalAlign="bottom" height={36} />
-              </PieChart>
-            </ResponsiveContainer>
+          <div className="flex-1 w-full relative">
+            {totalTasks === 0 ? (
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                No tasks available to chart.
+              </div>
+            ) : (
+              <ResponsiveContainer width="99%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={statusData.filter(d => d.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {statusData.filter(d => d.value > 0).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend verticalAlign="bottom" height={36} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
         {/* Priority Bar Chart */}
-        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col">
+        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col min-h-[400px]">
           <h3 className="font-semibold mb-6">Tasks by Priority Level</h3>
-          <div className="h-[300px] w-full flex-1">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={priorityData}
-                margin={{ top: 20, right: 30, left: -20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip cursor={{fill: 'transparent'}} />
-                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                  {priorityData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="flex-1 w-full relative">
+            {totalTasks === 0 ? (
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                No tasks available to chart.
+              </div>
+            ) : (
+              <ResponsiveContainer width="99%" height={300}>
+                <BarChart
+                  data={priorityData}
+                  margin={{ top: 20, right: 30, left: -20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                  <YAxis axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip cursor={{fill: 'transparent'}} />
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                    {priorityData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>

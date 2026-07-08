@@ -1,13 +1,70 @@
+import { useEffect } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, User, Bell, Palette } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getSettings, updateSettings } from "@/api/settings";
 
 export function SettingsPage() {
   const { user, signOut } = useAuthStore();
+  const { 
+    theme, 
+    setTheme, 
+    emailNotifications, 
+    setEmailNotifications,
+    dueDateReminders,
+    setDueDateReminders,
+    productUpdates,
+    setProductUpdates,
+    setAllSettings
+  } = useSettingsStore();
+
+  const { data: serverSettings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: getSettings,
+  });
+
+  const mutation = useMutation({
+    mutationFn: updateSettings,
+  });
+
+  // Sync initial server state to local state
+  useEffect(() => {
+    if (serverSettings) {
+      setAllSettings({
+        theme: serverSettings.theme,
+        emailNotifications: serverSettings.email_notifications,
+        dueDateReminders: serverSettings.due_date_reminders,
+        productUpdates: serverSettings.product_updates,
+      });
+    }
+  }, [serverSettings, setAllSettings]);
+
+  const handleThemeChange = (checked: boolean) => {
+    const newTheme = checked ? 'dark' : 'light';
+    setTheme(newTheme);
+    mutation.mutate({ theme: newTheme });
+  };
+
+  const handleEmailChange = (checked: boolean) => {
+    setEmailNotifications(checked);
+    mutation.mutate({ email_notifications: checked });
+  };
+
+  const handleDueDateChange = (checked: boolean) => {
+    setDueDateReminders(checked);
+    mutation.mutate({ due_date_reminders: checked });
+  };
+
+  const handleProductUpdatesChange = (checked: boolean) => {
+    setProductUpdates(checked);
+    mutation.mutate({ product_updates: checked });
+  };
 
   return (
     <div className="flex flex-col gap-8 h-full max-w-4xl mx-auto w-full pb-8">
@@ -17,22 +74,22 @@ export function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent mb-6 gap-6">
+        <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent mb-6 gap-6 overflow-x-auto overflow-y-hidden">
           <TabsTrigger 
             value="profile" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
           >
             <User className="h-4 w-4 mr-2" /> Profile
           </TabsTrigger>
           <TabsTrigger 
             value="preferences" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
           >
             <Palette className="h-4 w-4 mr-2" /> Preferences
           </TabsTrigger>
           <TabsTrigger 
             value="notifications" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3"
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
           >
             <Bell className="h-4 w-4 mr-2" /> Notifications
           </TabsTrigger>
@@ -55,7 +112,7 @@ export function SettingsPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Button variant="outline">Change Photo</Button>
+                  <Button variant="outline" disabled>Change Photo</Button>
                 </div>
               </div>
 
@@ -73,11 +130,11 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border bg-red-50 shadow-sm border-red-100">
+          <div className="rounded-xl border bg-red-50 dark:bg-red-950/20 shadow-sm border-red-100 dark:border-red-900/50">
             <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg font-semibold text-red-700">Sign Out</h3>
-                <p className="text-sm text-red-600/80">Log out of your TaskFlow account on this device.</p>
+                <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">Sign Out</h3>
+                <p className="text-sm text-red-600/80 dark:text-red-400/80">Log out of your TaskFlow account on this device.</p>
               </div>
               <Button variant="destructive" onClick={signOut} className="gap-2">
                 <LogOut className="h-4 w-4" /> Sign Out
@@ -96,7 +153,10 @@ export function SettingsPage() {
                   <Label className="text-base">Dark Mode</Label>
                   <p className="text-sm text-muted-foreground">Switch between light and dark themes.</p>
                 </div>
-                <Switch />
+                <Switch 
+                  checked={theme === 'dark'}
+                  onCheckedChange={handleThemeChange}
+                />
               </div>
             </div>
             <hr />
@@ -127,7 +187,10 @@ export function SettingsPage() {
                   <Label className="text-base">Email Notifications</Label>
                   <p className="text-sm text-muted-foreground">Receive a daily digest of tasks.</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={emailNotifications}
+                  onCheckedChange={handleEmailChange}
+                />
               </div>
               <hr />
               <div className="flex items-center justify-between">
@@ -135,7 +198,10 @@ export function SettingsPage() {
                   <Label className="text-base">Due Date Reminders</Label>
                   <p className="text-sm text-muted-foreground">Get alerted when a task is due soon.</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={dueDateReminders}
+                  onCheckedChange={handleDueDateChange}
+                />
               </div>
               <hr />
               <div className="flex items-center justify-between">
@@ -143,7 +209,10 @@ export function SettingsPage() {
                   <Label className="text-base">Product Updates</Label>
                   <p className="text-sm text-muted-foreground">Hear about new TaskFlow features.</p>
                 </div>
-                <Switch />
+                <Switch 
+                  checked={productUpdates}
+                  onCheckedChange={handleProductUpdatesChange}
+                />
               </div>
             </div>
           </div>

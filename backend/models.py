@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy import Column, String, DateTime, ForeignKey, Enum as SQLEnum, Boolean
 from sqlalchemy.orm import relationship
 import enum
 import uuid
@@ -25,6 +25,19 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     tasks = relationship("Task", back_populates="owner")
+    settings = relationship("UserSettings", back_populates="user", uselist=False)
+
+class UserSettings(Base):
+    __tablename__ = "taskflow_user_settings"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    user_id = Column(String, ForeignKey("taskflow_user.id"), unique=True)
+    theme = Column(String, default="system")
+    email_notifications = Column(Boolean, default=True)
+    due_date_reminders = Column(Boolean, default=True)
+    product_updates = Column(Boolean, default=False)
+    
+    user = relationship("User", back_populates="settings")
 
 class Task(Base):
     __tablename__ = "taskflow_task"
