@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
@@ -9,6 +9,15 @@ import schemas
 from auth import get_current_user
 from scheduler import scheduler
 from contextlib import asynccontextmanager
+import cloudinary
+import cloudinary.uploader
+import os
+
+cloudinary.config(
+  cloud_name = os.environ.get("CLOUDINARY_CLOUD_NAME"),
+  api_key = os.environ.get("CLOUDINARY_API_KEY"),
+  api_secret = os.environ.get("CLOUDINARY_API_SECRET")
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -93,3 +102,11 @@ def update_settings(settings_update: schemas.UserSettingsUpdate, current_user: m
     db.commit()
     db.refresh(settings)
     return settings
+
+@app.post("/users/me/avatar")
+def upload_avatar(file: UploadFile = File(...), current_user: models.User = Depends(get_current_user)):
+    try:
+        result = cloudinary.uploader.upload(file.file)
+        return {"photoURL": result.get("secure_url")}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

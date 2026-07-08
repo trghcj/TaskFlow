@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
-import { storage } from "@/lib/firebase";
+import apiClient from "@/api/axios";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,9 +93,14 @@ export function SettingsPage() {
 
     try {
       setIsUploading(true);
-      const storageRef = ref(storage, `avatars/${user.uid}`);
-      await uploadBytes(storageRef, file);
-      const photoURL = await getDownloadURL(storageRef);
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const response = await apiClient.post<{photoURL: string}>("/users/me/avatar", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      
+      const photoURL = response.data.photoURL;
       
       await updateProfile(user, { photoURL });
       updateUser({ photoURL });
