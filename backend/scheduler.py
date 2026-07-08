@@ -42,6 +42,15 @@ def check_due_tasks():
                 print(f"Sending reminder to {user.email} for {len(due_soon_tasks)} tasks")
                 send_due_date_reminder(user.email, due_soon_tasks)
                 
+                # Create an in-app notification
+                notification = models.Notification(
+                    user_id=user.id,
+                    title="Tasks Due Soon!",
+                    message=f"You have {len(due_soon_tasks)} task(s) due in the next 24 hours."
+                )
+                db.add(notification)
+                db.commit()
+                
     except Exception as e:
         print(f"Error in scheduled task: {e}")
     finally:

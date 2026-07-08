@@ -117,3 +117,27 @@ def upload_avatar(file: UploadFile = File(...), current_user: models.User = Depe
         return {"photoURL": result.get("secure_url")}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/notifications", response_model=List[schemas.NotificationResponse])
+def get_notifications(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return db.query(models.Notification).filter(models.Notification.user_id == current_user.id).order_by(models.Notification.created_at.desc()).all()
+
+@app.put("/notifications/{notification_id}/read", response_model=schemas.NotificationResponse)
+def read_notification(notification_id: str, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    notification = db.query(models.Notification).filter(models.Notification.id == notification_id, models.Notification.user_id == current_user.id).first()
+    if not notification:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    notification.is_read = True
+    db.commit()
+    db.refresh(notification)
+    return notification
+
+@app.put("/users/me", response_model=schemas.UserResponse)
+def update_user_profile(user_update: schemas.UserUpdate, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if user_update.display_name is not None:
+        current_user.display_name = user_update.display_name
+    if user_update.email is not None:
+        current_user.email = user_update.email
+    db.commit()
+    db.refresh(current_user)
+    return current_user

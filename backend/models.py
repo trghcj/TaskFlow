@@ -26,6 +26,7 @@ class User(Base):
 
     tasks = relationship("Task", back_populates="owner")
     settings = relationship("UserSettings", back_populates="user", uselist=False)
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
 
 class UserSettings(Base):
     __tablename__ = "taskflow_user_settings"
@@ -55,3 +56,15 @@ class Task(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     owner = relationship("User", back_populates="tasks")
+
+class Notification(Base):
+    __tablename__ = "taskflow_notification"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    user_id = Column(String, ForeignKey("taskflow_user.id"), index=True)
+    title = Column(String)
+    message = Column(String)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User", back_populates="notifications")
