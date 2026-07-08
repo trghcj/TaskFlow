@@ -1,11 +1,20 @@
 import { create } from 'zustand';
-import { signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged, type User } from 'firebase/auth';
+import { 
+  signInWithPopup, 
+  signOut as firebaseSignOut, 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  type User 
+} from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 
 interface AuthState {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   initializeAuth: () => void;
   updateUser: (userUpdates: Partial<User>) => void;
@@ -20,6 +29,24 @@ export const useAuthStore = create<AuthState>((set) => ({
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error("Error signing in with Google:", error);
+      throw error;
+    }
+  },
+
+  signInWithEmail: async (email, password) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error("Error signing in with email:", error);
+      throw error;
+    }
+  },
+
+  signUpWithEmail: async (email, password) => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error("Error signing up with email:", error);
       throw error;
     }
   },
