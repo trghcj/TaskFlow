@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
-import { updateProfile } from "firebase/auth";
+import { updateProfile, updateEmail } from "firebase/auth";
 import apiClient from "@/api/axios";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { LogOut, User, Bell, Palette, Loader2 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getSettings, updateSettings } from "@/api/settings";
+import { useTranslation } from "react-i18next";
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const { user, signOut, updateUser } = useAuthStore();
   const [isUploading, setIsUploading] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isGoogleUser = user?.providerData?.some(p => p.providerId === 'google.com');
+  const [displayName, setDisplayName] = useState(user?.displayName || "");
+  const [email, setEmail] = useState(user?.email || "");
   const { 
     theme, 
     setTheme, 
@@ -111,11 +117,30 @@ export function SettingsPage() {
     }
   };
 
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    try {
+      setIsSavingProfile(true);
+      if (displayName !== user.displayName) {
+        await updateProfile(user, { displayName });
+      }
+      if (email !== user.email) {
+        await updateEmail(user, email);
+      }
+      await apiClient.put("/users/me", { display_name: displayName, email });
+      updateUser({ displayName, email });
+    } catch (error) {
+      console.error("Error saving profile:", error);
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8 h-full max-w-4xl mx-auto w-full pb-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground mt-2">Manage your account settings and preferences.</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('settings.title')}</h1>
+        <p className="text-muted-foreground mt-2">{t('settings.subtitle')}</p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
@@ -124,19 +149,19 @@ export function SettingsPage() {
             value="profile" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
           >
-            <User className="h-4 w-4 mr-2" /> Profile
+            <User className="h-4 w-4 mr-2" /> {t('settings.profile')}
           </TabsTrigger>
           <TabsTrigger 
             value="preferences" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
           >
-            <Palette className="h-4 w-4 mr-2" /> Preferences
+            <Palette className="h-4 w-4 mr-2" /> {t('settings.preferences')}
           </TabsTrigger>
           <TabsTrigger 
             value="notifications" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
           >
-            <Bell className="h-4 w-4 mr-2" /> Notifications
+            <Bell className="h-4 w-4 mr-2" /> {t('settings.notifications')}
           </TabsTrigger>
         </TabsList>
 
@@ -144,8 +169,8 @@ export function SettingsPage() {
         <TabsContent value="profile" className="space-y-6">
           <div className="rounded-xl border bg-card shadow-sm">
             <div className="p-6 border-b">
-              <h3 className="text-lg font-semibold">Personal Information</h3>
-              <p className="text-sm text-muted-foreground">Update your photo and personal details here.</p>
+              <h3 className="text-lg font-semibold">{t('settings.personalInfo')}</h3>
+              <p className="text-sm text-muted-foreground">{t('settings.personalInfoDesc')}</p>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-6">
@@ -170,22 +195,28 @@ export function SettingsPage() {
                     disabled={isUploading}
                   >
                     {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Change Photo
+                    {t('settings.changePhoto')}
                   </Button>
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" defaultValue={user?.displayName || ""} disabled />
-                  <p className="text-xs text-muted-foreground">Synced via Google Auth.</p>
+                  <Label htmlFor="name">{t('settings.fullName')}</Label>
+                  <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} disabled={isGoogleUser} />
+                  {isGoogleUser && <p className="text-xs text-muted-foreground">{t('settings.syncedGoogle')}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" defaultValue={user?.email || ""} disabled />
+                  <Label htmlFor="email">{t('settings.emailAddress')}</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={isGoogleUser} />
                 </div>
               </div>
+              {!isGoogleUser && (
+                <Button onClick={handleSaveProfile} disabled={isSavingProfile}>
+                  {isSavingProfile ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Save Profile
+                </Button>
+              )}
             </div>
           </div>
 
@@ -206,11 +237,11 @@ export function SettingsPage() {
         <TabsContent value="preferences" className="space-y-6">
           <div className="rounded-xl border bg-card shadow-sm p-6 space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Appearance</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('settings.appearance')}</h3>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Dark Mode</Label>
-                  <p className="text-sm text-muted-foreground">Switch between light and dark themes.</p>
+                  <Label className="text-base">{t('settings.darkMode')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('settings.darkModeDesc')}</p>
                 </div>
                 <Switch 
                   checked={theme === 'dark'}
@@ -220,10 +251,10 @@ export function SettingsPage() {
             </div>
             <hr />
             <div>
-              <h3 className="text-lg font-semibold mb-4">Language & Region</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('settings.languageRegion')}</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Language</Label>
+                  <Label>{t('settings.language')}</Label>
                   <Select value={language} onValueChange={handleLanguageChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Language" />
@@ -237,7 +268,7 @@ export function SettingsPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Timezone</Label>
+                  <Label>{t('settings.timezone')}</Label>
                   <Select value={timezone} onValueChange={handleTimezoneChange}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Timezone" />
@@ -258,13 +289,13 @@ export function SettingsPage() {
         {/* Notifications Tab */}
         <TabsContent value="notifications" className="space-y-6">
           <div className="rounded-xl border bg-card shadow-sm p-6 space-y-6">
-            <h3 className="text-lg font-semibold">Notification Preferences</h3>
+            <h3 className="text-lg font-semibold">{t('settings.notificationPrefs')}</h3>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">Receive a daily digest of tasks.</p>
+                  <Label className="text-base">{t('settings.emailNotifications')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('settings.emailNotificationsDesc')}</p>
                 </div>
                 <Switch 
                   checked={emailNotifications}
@@ -274,8 +305,8 @@ export function SettingsPage() {
               <hr />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Due Date Reminders</Label>
-                  <p className="text-sm text-muted-foreground">Get alerted when a task is due soon.</p>
+                  <Label className="text-base">{t('settings.dueDateReminders')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('settings.dueDateRemindersDesc')}</p>
                 </div>
                 <Switch 
                   checked={dueDateReminders}
@@ -285,8 +316,8 @@ export function SettingsPage() {
               <hr />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Product Updates</Label>
-                  <p className="text-sm text-muted-foreground">Hear about new TaskFlow features.</p>
+                  <Label className="text-base">{t('settings.productUpdates')}</Label>
+                  <p className="text-sm text-muted-foreground">{t('settings.productUpdatesDesc')}</p>
                 </div>
                 <Switch 
                   checked={productUpdates}

@@ -1,8 +1,9 @@
-import { Search, Bell, Menu, LogOut, Settings, BellRing } from "lucide-react"
+import { Search, Bell, Menu, LogOut, Settings, BellRing, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/store/useAuthStore"
 import type { Task } from "@/store/useTaskStore"
 import { useTasks } from "@/hooks/useTasks"
+import { useNotifications } from "@/hooks/useNotifications"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -27,9 +28,12 @@ interface TopNavbarProps {
 export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
   const { user, signOut } = useAuthStore()
   const { data: tasks = [] } = useTasks()
+  const { notifications, markAsRead } = useNotifications()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState("")
+  
+  const unreadCount = notifications.filter(n => !n.is_read).length
 
   const filteredTasks = searchQuery.trim() === "" 
     ? [] 
@@ -90,25 +94,49 @@ export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
           <PopoverTrigger asChild>
             <Button variant="ghost" size="icon" className="text-muted-foreground relative">
               <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
+              {unreadCount > 0 && <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-80 p-0" align="end">
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <h4 className="font-semibold text-sm">Notifications</h4>
-              <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-muted-foreground hover:text-primary">
-                Mark all read
-              </Button>
+              {unreadCount > 0 && (
+                <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-muted-foreground hover:text-primary" onClick={() => {
+                  notifications.filter(n => !n.is_read).forEach(n => markAsRead(n.id))
+                }}>
+                  Mark all read
+                </Button>
+              )}
             </div>
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                <BellRing className="h-6 w-6 text-primary" />
+            {notifications.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                  <BellRing className="h-6 w-6 text-primary" />
+                </div>
+                <h5 className="font-medium text-sm">You're all caught up!</h5>
+                <p className="text-xs text-muted-foreground mt-1 max-w-[200px]">
+                  Check back later for new tasks, due dates, and product updates.
+                </p>
               </div>
-              <h5 className="font-medium text-sm">You're all caught up!</h5>
-              <p className="text-xs text-muted-foreground mt-1 max-w-[200px]">
-                Check back later for new tasks, due dates, and product updates.
-              </p>
-            </div>
+            ) : (
+              <div className="max-h-80 overflow-y-auto flex flex-col">
+                {notifications.map(notification => (
+                  <div key={notification.id} className={`px-4 py-3 border-b last:border-0 hover:bg-secondary/20 transition-colors ${!notification.is_read ? 'bg-primary/5' : ''}`}>
+                    <div className="flex justify-between items-start gap-2">
+                      <div>
+                        <h5 className="font-medium text-sm">{notification.title}</h5>
+                        <p className="text-xs text-muted-foreground mt-1">{notification.message}</p>
+                      </div>
+                      {!notification.is_read && (
+                        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => markAsRead(notification.id)} title="Mark as read">
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </PopoverContent>
         </Popover>
 
