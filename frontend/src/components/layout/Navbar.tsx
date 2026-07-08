@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { CheckSquare } from "lucide-react"
 
 export function Navbar() {
   return (
