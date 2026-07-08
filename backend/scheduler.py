@@ -57,6 +57,5 @@ def check_due_tasks():
         db.close()
 
 scheduler = BackgroundScheduler()
-# In a real app, this might run every hour (trigger="cron", hour="*")
-# For testing/demo purposes, we'll run it every 5 minutes
-scheduler.add_job(check_due_tasks, "interval", minutes=5)
+# Run every 12 hours instead of 5 minutes to prevent email spam
+scheduler.add_job(check_due_tasks, "interval", hours=12)

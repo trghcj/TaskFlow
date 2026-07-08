@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Calendar, Users, BarChart3, Zap, Shield, ArrowRight } from "lucide-react"
+import { CheckCircle2, Calendar, BarChart3, Zap, Shield, ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export function LandingPage() {
@@ -95,7 +95,7 @@ export function LandingPage() {
             <div className="text-center space-y-4 mb-16">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Everything you need to succeed</h2>
               <p className="text-muted-foreground max-w-[600px] mx-auto text-lg">
-                Powerful features designed to help your team move faster and stay aligned.
+                Powerful features designed to help you move faster and stay aligned with your goals.
               </p>
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -115,10 +115,10 @@ export function LandingPage() {
               </div>
               <div className="flex flex-col items-start gap-4 p-8 rounded-3xl bg-background border shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
                 <div className="rounded-xl bg-primary/10 p-3 text-primary">
-                  <Users className="h-6 w-6" />
+                  <CheckCircle2 className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold">Work together</h3>
-                <p className="text-muted-foreground">Collaborate with your team in real-time. Share lists and assign tasks seamlessly.</p>
+                <h3 className="text-xl font-bold">Stay Organized</h3>
+                <p className="text-muted-foreground">Keep all your personal tasks, habits, and goals structured in one simple workflow.</p>
               </div>
               <div className="flex flex-col items-start gap-4 p-8 rounded-3xl bg-background border shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
                 <div className="rounded-xl bg-primary/10 p-3 text-primary">
@@ -165,7 +165,7 @@ export function LandingPage() {
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">3</div>
-                    <span className="font-medium">Invite your team and start collaborating</span>
+                    <span className="font-medium">Track your personal growth and productivity</span>
                   </li>
                 </ul>
               </div>
