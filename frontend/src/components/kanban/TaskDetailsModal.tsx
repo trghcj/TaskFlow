@@ -27,14 +27,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTaskStore } from "@/store/useTaskStore";
+import { useTasks, useCreateTask, useUpdateTask } from "@/hooks/useTasks";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   status: z.enum(["todo", "in-progress", "review", "completed"]),
   priority: z.enum(["low", "medium", "high"]),
-  dueDate: z.string().optional(),
+  due_date: z.string().optional(),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
@@ -46,7 +46,9 @@ interface TaskDetailsModalProps {
 }
 
 export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalProps) {
-  const { tasks, addTask, updateTask } = useTaskStore();
+  const { data: tasks = [] } = useTasks();
+  const { mutate: createTask } = useCreateTask();
+  const { mutate: updateTask } = useUpdateTask();
   const existingTask = taskId ? tasks.find((t) => t.id === taskId) : null;
 
   const form = useForm<TaskFormValues>({
@@ -56,7 +58,7 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
       description: "",
       status: "todo",
       priority: "medium",
-      dueDate: "",
+      due_date: "",
     },
   });
 
@@ -67,7 +69,7 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
         description: existingTask.description || "",
         status: existingTask.status,
         priority: existingTask.priority,
-        dueDate: existingTask.dueDate || "",
+        due_date: existingTask.due_date || "",
       });
     } else {
       form.reset({
@@ -75,16 +77,16 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
         description: "",
         status: "todo",
         priority: "medium",
-        dueDate: "",
+        due_date: "",
       });
     }
   }, [existingTask, form, isOpen]);
 
   const onSubmit = (data: TaskFormValues) => {
     if (existingTask) {
-      updateTask(existingTask.id, data);
+      updateTask({ id: existingTask.id, updates: data });
     } else {
-      addTask(data);
+      createTask(data);
     }
     onClose();
   };
@@ -174,7 +176,7 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
             
             <FormField
               control={form.control}
-              name="dueDate"
+              name="due_date"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Due Date</FormLabel>

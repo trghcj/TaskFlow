@@ -62,10 +62,10 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
           <span className={cn("px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border", priorityColors[task.priority])}>
             {task.priority}
           </span>
-          {task.dueDate && (
+          {task.due_date && (
             <div className="flex items-center text-xs text-muted-foreground">
               <Calendar className="mr-1 h-3 w-3" />
-              {new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              {new Date(task.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
             </div>
           )}
         </div>

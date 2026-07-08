@@ -1,10 +1,10 @@
 import { useAuthStore } from "@/store/useAuthStore"
-import { useTaskStore } from "@/store/useTaskStore"
+import { useTasks } from "@/hooks/useTasks"
 import { TaskCard } from "@/components/kanban/TaskCard"
 
 export function DashboardPage() {
   const { user } = useAuthStore()
-  const { tasks } = useTaskStore()
+  const { data: tasks = [] } = useTasks()
   
   const todayTasks = tasks.filter(t => t.status !== 'completed')
 

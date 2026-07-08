@@ -15,11 +15,13 @@ import {
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTaskStore } from '@/store/useTaskStore';
+import { useTasks } from '@/hooks/useTasks';
 import { cn } from '@/lib/utils';
 
 export function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { tasks, openModal } = useTaskStore();
+  const { openModal } = useTaskStore();
+  const { data: tasks = [] } = useTasks();
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
@@ -90,8 +92,8 @@ export function CalendarPage() {
         
         // Find tasks for this day
         const dayTasks = tasks.filter(task => {
-          if (!task.dueDate) return false;
-          return isSameDay(parseISO(task.dueDate), cloneDay);
+          if (!task.due_date) return false;
+          return isSameDay(parseISO(task.due_date), cloneDay);
         });
 
         days.push(
