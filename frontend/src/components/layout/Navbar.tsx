@@ -14,19 +14,26 @@ export function Navbar() {
           </Link>
         </div>
         <nav className="hidden md:flex gap-6">
-          <Link
-            to="#features"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          <a
+            href="#features"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
           >
             Features
-          </Link>
-          <Link
-            to="#resources"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          </a>
+          <a
+            href="#resources"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('resources')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
           >
             Resources
-          </Link>
-
+          </a>
         </nav>
         <div className="flex items-center gap-4">
           <Button variant="ghost" className="hidden sm:inline-flex" asChild>
