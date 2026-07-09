@@ -36,7 +36,7 @@ const taskSchema = z.object({
   priority: z.enum(["low", "medium", "high"]),
   due_date: z.string().optional(),
   due_time: z.string().optional(),
-  reminder_offset: z.coerce.number().optional().default(0),
+  reminder_offset: z.number().optional(),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
