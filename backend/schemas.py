@@ -9,6 +9,9 @@ class TaskBase(BaseModel):
     status: TaskStatus = TaskStatus.todo
     priority: TaskPriority = TaskPriority.medium
     due_date: Optional[str] = None
+    due_time: Optional[str] = None
+    reminder_offset: Optional[int] = 0
+    reminder_sent: Optional[bool] = False
 
 class TaskCreate(TaskBase):
     pass
@@ -19,6 +22,9 @@ class TaskUpdate(BaseModel):
     status: Optional[TaskStatus] = None
     priority: Optional[TaskPriority] = None
     due_date: Optional[str] = None
+    due_time: Optional[str] = None
+    reminder_offset: Optional[int] = None
+    reminder_sent: Optional[bool] = None
 
 class TaskResponse(TaskBase):
     id: str

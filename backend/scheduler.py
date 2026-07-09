@@ -20,21 +20,32 @@ def check_due_tasks():
             if not user or not user.email:
                 continue
                 
-            # Find tasks for this user that are due within the next 24 hours and not completed
+            # Find tasks for this user that are not completed and haven't had a reminder sent yet
             due_soon_tasks = []
             tasks = db.query(models.Task).filter(
                 models.Task.owner_id == user.id,
                 models.Task.status != models.TaskStatus.completed,
-                models.Task.due_date != None
+                models.Task.due_date != None,
+                models.Task.reminder_sent == False
             ).all()
             
             for task in tasks:
                 try:
-                    # Due date is stored as string YYYY-MM-DD
-                    due_date_obj = datetime.strptime(task.due_date, "%Y-%m-%d")
-                    # Check if due date is between now and tomorrow
-                    if now.date() <= due_date_obj.date() <= tomorrow.date():
+                    # Parse date and time
+                    due_date_str = task.due_date
+                    due_time_str = task.due_time or "00:00" # Default to midnight if no time specified
+                    
+                    due_datetime_str = f"{due_date_str} {due_time_str}"
+                    due_datetime = datetime.strptime(due_datetime_str, "%Y-%m-%d %H:%M")
+                    
+                    # Calculate exact reminder time based on offset
+                    offset_minutes = task.reminder_offset or 0
+                    reminder_time = due_datetime - timedelta(minutes=offset_minutes)
+                    
+                    # If we have reached or passed the reminder time, queue it to send
+                    if now >= reminder_time:
                         due_soon_tasks.append(task)
+                        task.reminder_sent = True # Mark as sent so it won't be spammed again
                 except ValueError:
                     continue
             
@@ -45,8 +56,8 @@ def check_due_tasks():
                 # Create an in-app notification
                 notification = models.Notification(
                     user_id=user.id,
-                    title="Tasks Due Soon!",
-                    message=f"You have {len(due_soon_tasks)} task(s) due in the next 24 hours."
+                    title="Task Reminder",
+                    message=f"You have {len(due_soon_tasks)} task(s) due soon."
                 )
                 db.add(notification)
                 db.commit()
@@ -57,5 +68,5 @@ def check_due_tasks():
         db.close()
 
 scheduler = BackgroundScheduler()
-# Run every 12 hours instead of 5 minutes to prevent email spam
-scheduler.add_job(check_due_tasks, "interval", hours=12)
+# Run every 5 minutes to accurately catch specific minute/hour reminders
+scheduler.add_job(check_due_tasks, "interval", minutes=5)
