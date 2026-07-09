@@ -7,12 +7,15 @@ import {
   createUserWithEmailAndPassword,
   type User 
 } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { auth, googleProvider, githubProvider, microsoftProvider, yahooProvider } from '@/lib/firebase';
 
 interface AuthState {
   user: User | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithGithub: () => Promise<void>;
+  signInWithMicrosoft: () => Promise<void>;
+  signInWithYahoo: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -29,6 +32,33 @@ export const useAuthStore = create<AuthState>((set) => ({
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error("Error signing in with Google:", error);
+      throw error;
+    }
+  },
+
+  signInWithGithub: async () => {
+    try {
+      await signInWithPopup(auth, githubProvider);
+    } catch (error) {
+      console.error("Error signing in with Github:", error);
+      throw error;
+    }
+  },
+
+  signInWithMicrosoft: async () => {
+    try {
+      await signInWithPopup(auth, microsoftProvider);
+    } catch (error) {
+      console.error("Error signing in with Microsoft:", error);
+      throw error;
+    }
+  },
+
+  signInWithYahoo: async () => {
+    try {
+      await signInWithPopup(auth, yahooProvider);
+    } catch (error) {
+      console.error("Error signing in with Yahoo:", error);
       throw error;
     }
   },

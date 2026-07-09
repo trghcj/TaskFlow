@@ -10,6 +10,8 @@ export interface Task {
   status: TaskStatus;
   priority: TaskPriority;
   due_date?: string;
+  due_time?: string;
+  reminder_offset?: number;
   created_at?: string;
   owner_id?: string;
 }

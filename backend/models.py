@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey, Enum as SQLEnum, Boolean
+from sqlalchemy import Column, String, DateTime, ForeignKey, Enum as SQLEnum, Boolean, Integer
 from sqlalchemy.orm import relationship
 import enum
 import uuid
@@ -51,6 +51,9 @@ class Task(Base):
     status = Column(SQLEnum(TaskStatus), default=TaskStatus.todo)
     priority = Column(SQLEnum(TaskPriority), default=TaskPriority.medium)
     due_date = Column(String, nullable=True)
+    due_time = Column(String, nullable=True)
+    reminder_offset = Column(Integer, default=0) # Minutes before due time
+    reminder_sent = Column(Boolean, default=False)
     
     owner_id = Column(String, ForeignKey("taskflow_user.id"))
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

@@ -35,6 +35,8 @@ const taskSchema = z.object({
   status: z.enum(["todo", "in-progress", "review", "completed"]),
   priority: z.enum(["low", "medium", "high"]),
   due_date: z.string().optional(),
+  due_time: z.string().optional(),
+  reminder_offset: z.coerce.number().optional().default(0),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
@@ -59,6 +61,8 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
       status: "todo",
       priority: "medium",
       due_date: "",
+      due_time: "",
+      reminder_offset: 0,
     },
   });
 
@@ -70,6 +74,8 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
         status: existingTask.status,
         priority: existingTask.priority,
         due_date: existingTask.due_date || "",
+        due_time: existingTask.due_time || "",
+        reminder_offset: existingTask.reminder_offset || 0,
       });
     } else {
       form.reset({
@@ -78,6 +84,8 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
         status: "todo",
         priority: "medium",
         due_date: "",
+        due_time: "",
+        reminder_offset: 0,
       });
     }
   }, [existingTask, form, isOpen]);
@@ -174,15 +182,55 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
               />
             </div>
             
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="due_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Due Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="due_time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Due Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
             <FormField
               control={form.control}
-              name="due_date"
+              name="reminder_offset"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Due Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
+                  <FormLabel>Reminder</FormLabel>
+                  <Select onValueChange={(val) => field.onChange(parseInt(val, 10))} value={field.value?.toString() || "0"}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select reminder offset" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="0">At time of due</SelectItem>
+                      <SelectItem value="15">15 minutes before</SelectItem>
+                      <SelectItem value="30">30 minutes before</SelectItem>
+                      <SelectItem value="60">1 hour before</SelectItem>
+                      <SelectItem value="1440">1 day before</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
