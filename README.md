@@ -24,9 +24,9 @@ TaskFlow is a modern SaaS task management platform that helps individuals and te
 - **Calendar & Timezones**: Native timezone conversion using `date-fns-tz` to ensure deadlines are accurate regardless of user location.
 - **Analytics Dashboard**: Interactive charts built with `Recharts` to visualize productivity, completion rates, and priority distribution.
 - **Global Search**: Real-time filtering of tasks directly from the navigation bar.
-- **In-App & Email Notifications**: A background Python scheduler (APScheduler) generates real-time in-app notifications and dispatches digest emails for tasks due soon.
+- **Advanced Reminders & Notifications**: Set exact due times and customize notification offsets (e.g., 15 minutes before, 1 day before). A high-frequency background Python scheduler (`APScheduler`) reliably generates real-time in-app alerts and dispatches emails.
 - **Internationalization (i18n)**: Seamless translation of the UI into English, Spanish, French, and German using `react-i18next`.
-- **Comprehensive Authentication**: Support for both standard Email/Password accounts and Google OAuth via Firebase, including dynamic Profile Management.
+- **Comprehensive Authentication**: Support for standard Email/Password accounts and Single Sign-On (SSO) via Google, GitHub, Microsoft, and Yahoo using Firebase Authentication. Includes dynamic Profile Management.
 
 ## Architecture Flowchart
 
