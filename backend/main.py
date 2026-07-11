@@ -68,6 +68,13 @@ def update_task(task_id: str, task: schemas.TaskUpdate, current_user: models.Use
         raise HTTPException(status_code=404, detail="Task not found")
         
     update_data = task.model_dump(exclude_unset=True)
+    
+    # If the user changed the due date, time, or offset, we must reset the reminder flag
+    # so the scheduler will trigger a new notification for the new deadline.
+    timing_keys = {"due_date", "due_time", "reminder_offset"}
+    if any(key in update_data for key in timing_keys):
+        db_task.reminder_sent = False
+        
     for key, value in update_data.items():
         setattr(db_task, key, value)
         
