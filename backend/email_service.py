@@ -12,11 +12,11 @@ def send_due_date_reminder(to_email: str, tasks: list):
         return False
         
     try:
-        task_list_html = "".join([f"<li><strong>{t.title}</strong> (Due: {t.due_date})</li>" for t in tasks])
+        task_list_html = "".join([f"<li><strong>{t.title}</strong> (Due: {t.due_date} at {t.due_time or '00:00'})</li>" for t in tasks])
         
         html_content = f"""
         <h2>TaskFlow: You have tasks due soon!</h2>
-        <p>This is a quick reminder that the following tasks are due within the next 24 hours:</p>
+        <p>This is a quick reminder that the following tasks are due soon:</p>
         <ul>
             {task_list_html}
         </ul>
