@@ -12,7 +12,12 @@ def check_due_tasks():
         # Find all users who want due date reminders
         settings = db.query(models.UserSettings).filter(models.UserSettings.due_date_reminders == True).all()
         
-        now = datetime.now()
+        # Render servers run in UTC. Since due times are stored naively in IST (by the user),
+        # we need to convert the current server UTC time to naive IST time for accurate comparison.
+        utc_now = datetime.now(timezone.utc)
+        ist_now = utc_now + timedelta(hours=5, minutes=30)
+        now = ist_now.replace(tzinfo=None)
+        
         tomorrow = now + timedelta(days=1)
         
         for user_setting in settings:
