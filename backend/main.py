@@ -301,7 +301,7 @@ def upload_attachment(task_id: str, file: UploadFile = File(...), current_user: 
         raise HTTPException(status_code=500, detail=f"Failed to upload attachment: {str(e)}")
 
 # --- OAuth Endpoints ---
-@app.get("/api/auth/google/login")
+@app.get("/auth/google/login")
 def google_login():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         {
@@ -323,7 +323,7 @@ def google_login():
     # We will let the flow guess it or use a default one:
     # Render sets 'RENDER_EXTERNAL_URL' automatically, let's use it if available.
     base_url = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:10000")
-    redirect_uri = f"{base_url}/api/auth/google/callback"
+    redirect_uri = f"{base_url}/auth/google/callback"
     flow.redirect_uri = redirect_uri
     
     authorization_url, state = flow.authorization_url(
@@ -334,7 +334,7 @@ def google_login():
     
     return RedirectResponse(authorization_url)
 
-@app.get("/api/auth/google/callback")
+@app.get("/auth/google/callback")
 def google_callback(code: str, state: str = None, db: Session = Depends(get_db)):
     # This endpoint needs a way to know WHICH user is authenticating.
     # Since this is a redirect from Google, it doesn't have the Bearer token in headers.
@@ -355,7 +355,7 @@ def google_callback(code: str, state: str = None, db: Session = Depends(get_db))
         scopes=["https://www.googleapis.com/auth/calendar.events"]
     )
     base_url = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:10000")
-    flow.redirect_uri = f"{base_url}/api/auth/google/callback"
+    flow.redirect_uri = f"{base_url}/auth/google/callback"
     
     flow.fetch_token(code=code)
     credentials = flow.credentials
