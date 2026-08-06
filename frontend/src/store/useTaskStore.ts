@@ -3,6 +3,14 @@ import { create } from 'zustand';
 export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'completed';
 export type TaskPriority = 'low' | 'medium' | 'high';
 
+export interface SubTask {
+  id: string;
+  task_id: string;
+  title: string;
+  is_completed: boolean;
+  created_at: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -14,6 +22,7 @@ export interface Task {
   reminder_offset?: number;
   created_at?: string;
   owner_id?: string;
+  subtasks?: SubTask[];
 }
 
 interface UIState {

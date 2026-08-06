@@ -24,12 +24,33 @@ class TaskUpdate(BaseModel):
     due_date: Optional[str] = None
     due_time: Optional[str] = None
     reminder_offset: Optional[int] = None
+    reminder_offset: Optional[int] = None
     reminder_sent: Optional[bool] = None
+
+class SubTaskBase(BaseModel):
+    title: str
+    is_completed: bool = False
+
+class SubTaskCreate(SubTaskBase):
+    pass
+
+class SubTaskUpdate(BaseModel):
+    title: Optional[str] = None
+    is_completed: Optional[bool] = None
+
+class SubTaskResponse(SubTaskBase):
+    id: str
+    task_id: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 class TaskResponse(TaskBase):
     id: str
     owner_id: str
     created_at: datetime
+    subtasks: List[SubTaskResponse] = []
 
     class Config:
         from_attributes = True
@@ -43,6 +64,8 @@ class UserResponse(BaseModel):
     id: str
     email: str
     display_name: Optional[str] = None
+    current_streak: int = 0
+    last_completed_date: Optional[str] = None
     created_at: datetime
 
     class Config:
