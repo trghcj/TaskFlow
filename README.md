@@ -21,10 +21,14 @@ TaskFlow is a modern SaaS task management platform that helps individuals and te
 ## Key Features
 
 - **Dynamic Kanban Board**: Drag-and-drop tasks across statuses with real-time backend synchronization.
+- **Sub-tasks & Gamification**: Break down complex tasks into nested checklists, track daily streaks, and celebrate productivity with interactive confetti animations.
+- **AI Smart Tasks (Gemini)**: Use natural language to instantly create tasks (auto-extracting due dates and priority), or use the "Magic Breakdown" button to let Google Gemini AI automatically generate a logical list of sub-tasks.
+- **Cloud File Attachments**: Upload and attach files directly to tasks using seamless Cloudinary integration.
+- **Google Calendar Sync**: Connect your Google account via OAuth 2.0 to automatically sync your TaskFlow deadlines to your primary Google Calendar in real-time.
+- **Automated Weekly Recaps**: Receive beautifully formatted HTML email recaps every Sunday summarizing your productivity and completed tasks (powered by Resend & APScheduler).
 - **Calendar & Timezones**: Native timezone conversion using `date-fns-tz` to ensure deadlines are accurate regardless of user location.
 - **Analytics Dashboard**: Interactive charts built with `Recharts` to visualize productivity, completion rates, and priority distribution.
-- **Global Search**: Real-time filtering of tasks directly from the navigation bar.
-- **Advanced Reminders & Notifications**: Set exact due times and customize notification offsets (e.g., 15 minutes before, 1 day before). A high-frequency background Python scheduler (`APScheduler`) reliably generates real-time in-app alerts and dispatches emails.
+- **Advanced Reminders & Notifications**: Set exact due times and customize notification offsets (e.g., 15 minutes before). A high-frequency background Python scheduler (`APScheduler`) reliably generates real-time in-app alerts and dispatches emails.
 - **Progressive Web App (PWA)**: Fully installable on desktop (Windows/Mac) and mobile (iOS/Android) for a native app-like experience with zero browser chrome.
 - **Internationalization (i18n)**: Seamless translation of the UI into English, Spanish, French, and German using `react-i18next`.
 - **Comprehensive Authentication**: Support for standard Email/Password accounts and Single Sign-On (SSO) via Google, GitHub, Microsoft, and Yahoo using Firebase Authentication. Includes dynamic Profile Management.
@@ -98,6 +102,14 @@ pip install -r requirements.txt
 Create a `.env` file in the `backend` directory:
 ```env
 DATABASE_URL="postgresql+psycopg://postgres.YOUR_PROJECT:YOUR_PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres"
+FIREBASE_PROJECT_ID="your-firebase-project-id"
+GEMINI_API_KEY="your-gemini-api-key"
+RESEND_API_KEY="your-resend-api-key"
+CLOUDINARY_CLOUD_NAME="your-cloud-name"
+CLOUDINARY_API_KEY="your-cloudinary-key"
+CLOUDINARY_API_SECRET="your-cloudinary-secret"
+GOOGLE_CLIENT_ID="your-google-oauth-client-id"
+GOOGLE_CLIENT_SECRET="your-google-oauth-client-secret"
 ```
 Place your Firebase Admin SDK JSON file in `backend/firebase-service-account.json`.
 
