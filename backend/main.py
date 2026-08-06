@@ -329,10 +329,7 @@ def google_login():
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
-        prompt='consent' # Force consent to get refresh token
-    )
-    
-    return RedirectResponse(authorization_url)
+    return db_subtask
 
 @app.get("/auth/google/callback")
 def google_callback(code: str, state: str = None, db: Session = Depends(get_db)):
