@@ -21,12 +21,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+import { useUser } from "@/hooks/useUser"
+
 interface TopNavbarProps {
   toggleSidebar: () => void
 }
 
 export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
   const { user, signOut } = useAuthStore()
+  const { data: userProfile } = useUser()
   const { data: tasks = [] } = useTasks()
   const { notifications, markAsRead } = useNotifications()
   const { t } = useTranslation()
@@ -41,7 +44,6 @@ export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
 
   const handleSelectTask = (_taskId: string) => {
     setSearchQuery("")
-    // If we had a task detail view, we'd navigate there. For now, go to dashboard.
     navigate("/dashboard")
   }
 
@@ -90,6 +92,13 @@ export function TopNavbar({ toggleSidebar }: TopNavbarProps) {
       </div>
 
       <div className="ml-auto flex items-center gap-4">
+        {/* Streak Counter */}
+        {userProfile !== undefined && (
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full text-sm font-semibold border border-orange-200 dark:border-orange-900/50" title="Current Productivity Streak">
+            🔥 {userProfile.current_streak}
+          </div>
+        )}
+        
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="icon" className="text-muted-foreground relative">

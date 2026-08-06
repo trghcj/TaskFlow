@@ -23,6 +23,10 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     display_name = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    
+    # Gamification
+    current_streak = Column(Integer, default=0)
+    last_completed_date = Column(String, nullable=True)
 
     tasks = relationship("Task", back_populates="owner")
     settings = relationship("UserSettings", back_populates="user", uselist=False)
@@ -59,6 +63,18 @@ class Task(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     owner = relationship("User", back_populates="tasks")
+    subtasks = relationship("SubTask", back_populates="task", cascade="all, delete-orphan")
+
+class SubTask(Base):
+    __tablename__ = "taskflow_subtask"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    task_id = Column(String, ForeignKey("taskflow_task.id"), index=True)
+    title = Column(String, nullable=False)
+    is_completed = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    task = relationship("Task", back_populates="subtasks")
 
 class Notification(Base):
     __tablename__ = "taskflow_notification"

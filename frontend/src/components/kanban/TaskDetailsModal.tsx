@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Plus, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTasks, useCreateTask, useUpdateTask } from "@/hooks/useTasks";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useTasks, useCreateTask, useUpdateTask, useCreateSubTask, useUpdateSubTask, useDeleteSubTask } from "@/hooks/useTasks";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -90,6 +92,19 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
     }
   }, [existingTask, form, isOpen]);
 
+  const { mutate: createSubTask } = useCreateSubTask();
+  const { mutate: updateSubTask } = useUpdateSubTask();
+  const { mutate: deleteSubTask } = useDeleteSubTask();
+  
+  const [newSubTaskTitle, setNewSubTaskTitle] = useState("");
+
+  const handleAddSubTask = () => {
+    if (newSubTaskTitle.trim() && existingTask) {
+      createSubTask({ taskId: existingTask.id, title: newSubTaskTitle.trim() });
+      setNewSubTaskTitle("");
+    }
+  };
+
   const onSubmit = (data: TaskFormValues) => {
     if (existingTask) {
       updateTask({ id: existingTask.id, updates: data });
@@ -99,9 +114,12 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
     onClose();
   };
 
+  const subtasks = existingTask?.subtasks || [];
+  const completedSubtasks = subtasks.filter(st => st.is_completed).length;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{existingTask ? "Edit Task" : "Create New Task"}</DialogTitle>
         </DialogHeader>
@@ -235,6 +253,53 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
                 </FormItem>
               )}
             />
+
+            {/* Subtasks Section */}
+            {existingTask && (
+              <div className="space-y-3 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium">Sub-tasks</h4>
+                  <span className="text-xs text-muted-foreground">{completedSubtasks}/{subtasks.length}</span>
+                </div>
+
+                <div className="space-y-2">
+                  {subtasks.map(subtask => (
+                    <div key={subtask.id} className="flex items-center justify-between gap-2 bg-secondary/20 p-2 rounded-md">
+                      <div className="flex items-center gap-3">
+                        <Checkbox 
+                          checked={subtask.is_completed} 
+                          onCheckedChange={(checked) => updateSubTask({ id: subtask.id, updates: { is_completed: checked as boolean } })} 
+                        />
+                        <span className={`text-sm ${subtask.is_completed ? 'line-through text-muted-foreground' : ''}`}>
+                          {subtask.title}
+                        </span>
+                      </div>
+                      <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0" onClick={() => deleteSubTask(subtask.id)}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Input 
+                    placeholder="Add a subtask..." 
+                    value={newSubTaskTitle} 
+                    onChange={(e) => setNewSubTaskTitle(e.target.value)} 
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddSubTask();
+                      }
+                    }}
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="secondary" size="icon" onClick={handleAddSubTask}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
 
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={onClose}>
