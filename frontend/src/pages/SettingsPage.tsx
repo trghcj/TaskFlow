@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LogOut, User, Bell, Palette, Loader2 } from "lucide-react";
+import { LogOut, User, Bell, Palette, Loader2, Link2, Calendar } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getSettings, updateSettings } from "@/api/settings";
 import { useTranslation } from "react-i18next";
@@ -162,6 +162,12 @@ export function SettingsPage() {
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
           >
             <Bell className="h-4 w-4 mr-2" /> {t('settings.notifications')}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="integrations" 
+            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2 py-3 whitespace-nowrap"
+          >
+            <Link2 className="h-4 w-4 mr-2" /> Integrations
           </TabsTrigger>
         </TabsList>
 
@@ -328,6 +334,35 @@ export function SettingsPage() {
             </div>
           </div>
         </TabsContent>
+
+        {/* Integrations Tab */}
+        <TabsContent value="integrations" className="space-y-6">
+          <div className="rounded-xl border bg-card shadow-sm">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Integrations</h3>
+              <p className="text-sm text-muted-foreground">Connect TaskFlow with your favorite tools.</p>
+            </div>
+            <div className="p-6 space-y-6">
+              
+              <div className="flex items-center justify-between border rounded-lg p-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+                    <Calendar className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-base">Google Calendar Sync</h4>
+                    <p className="text-sm text-muted-foreground">Automatically sync your tasks with due dates to your Google Calendar.</p>
+                  </div>
+                </div>
+                <Button variant="outline" onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google/login`}>
+                  Connect
+                </Button>
+              </div>
+
+            </div>
+          </div>
+        </TabsContent>
+
       </Tabs>
     </div>
   );
