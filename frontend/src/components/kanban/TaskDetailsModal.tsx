@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTasks, useCreateTask, useUpdateTask, useCreateSubTask, useUpdateSubTask, useDeleteSubTask } from "@/hooks/useTasks";
+import { useBreakdownTaskAI } from "@/hooks/useAI";
+import { Wand2, Loader2 } from "lucide-react";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -95,6 +97,7 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
   const { mutate: createSubTask } = useCreateSubTask();
   const { mutate: updateSubTask } = useUpdateSubTask();
   const { mutate: deleteSubTask } = useDeleteSubTask();
+  const { mutate: breakdownTask, isPending: isBreakingDown } = useBreakdownTaskAI();
   
   const [newSubTaskTitle, setNewSubTaskTitle] = useState("");
 
@@ -102,6 +105,16 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
     if (newSubTaskTitle.trim() && existingTask) {
       createSubTask({ taskId: existingTask.id, title: newSubTaskTitle.trim() });
       setNewSubTaskTitle("");
+    }
+  };
+
+  const handleMagicBreakdown = () => {
+    if (existingTask) {
+      breakdownTask({ 
+        title: existingTask.title, 
+        description: existingTask.description, 
+        taskId: existingTask.id 
+      });
     }
   };
 
@@ -259,7 +272,20 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
               <div className="space-y-3 pt-4 border-t">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium">Sub-tasks</h4>
-                  <span className="text-xs text-muted-foreground">{completedSubtasks}/{subtasks.length}</span>
+                  <div className="flex items-center gap-4">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={handleMagicBreakdown} 
+                      disabled={isBreakingDown}
+                      className="h-8 text-primary font-medium bg-primary/10 hover:bg-primary/20"
+                    >
+                      {isBreakingDown ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                      Magic Breakdown
+                    </Button>
+                    <span className="text-xs text-muted-foreground">{completedSubtasks}/{subtasks.length}</span>
+                  </div>
                 </div>
 
                 <div className="space-y-2">

@@ -108,3 +108,11 @@ class NotificationResponse(BaseModel):
 class UserUpdate(BaseModel):
     display_name: Optional[str] = None
     email: Optional[str] = None
+
+class AIParseRequest(BaseModel):
+    text: str
+
+class AIBreakdownRequest(BaseModel):
+    task_id: Optional[str] = None
+    title: str
+    description: Optional[str] = None
