@@ -385,3 +385,34 @@ def google_callback(code: str, state: str = None, db: Session = Depends(get_db))
         # Return a simple text response with the error
         from fastapi.responses import PlainTextResponse
         return PlainTextResponse(content=f"Error: {str(e)}\n\nTraceback:\n{error_details}", status_code=500)
+
+@app.get("/test-google-create")
+def test_google_create_route(db: Session = Depends(get_db)):
+    user = db.query(models.User).first()
+    if not user: return {"error": "no user"}
+    import google_calendar
+    service = google_calendar.get_google_calendar_service(user)
+    if not service:
+        return {"error": "no service", "access": bool(user.google_access_token), "refresh": bool(user.google_refresh_token)}
+        
+    start_time_str = f"2026-08-10T12:00:00"
+    tz = user.settings.timezone.split('(')[0].strip() if (user.settings and getattr(user.settings, 'timezone', None)) else 'UTC'
+    
+    event = {
+        'summary': "Test Event via API",
+        'description': "Testing 123",
+        'start': {
+            'dateTime': start_time_str,
+            'timeZone': tz,
+        },
+        'end': {
+            'dateTime': start_time_str,
+            'timeZone': tz,
+        }
+    }
+    try:
+        created_event = service.events().insert(calendarId='primary', body=event).execute()
+        return {"success": True, "eventId": created_event.get('id')}
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "traceback": traceback.format_exc(), "tz_used": tz}
