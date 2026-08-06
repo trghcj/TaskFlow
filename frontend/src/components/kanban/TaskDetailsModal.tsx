@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Paperclip, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useTasks, useCreateTask, useUpdateTask, useCreateSubTask, useUpdateSubTask, useDeleteSubTask } from "@/hooks/useTasks";
+import { useTasks, useCreateTask, useUpdateTask, useCreateSubTask, useUpdateSubTask, useDeleteSubTask, useUploadAttachment } from "@/hooks/useTasks";
 import { useBreakdownTaskAI } from "@/hooks/useAI";
 import { Wand2, Loader2 } from "lucide-react";
 
@@ -98,8 +98,15 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
   const { mutate: updateSubTask } = useUpdateSubTask();
   const { mutate: deleteSubTask } = useDeleteSubTask();
   const { mutate: breakdownTask, isPending: isBreakingDown } = useBreakdownTaskAI();
+  const { mutate: uploadAttachment, isPending: isUploading } = useUploadAttachment();
   
   const [newSubTaskTitle, setNewSubTaskTitle] = useState("");
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0] && existingTask) {
+      uploadAttachment({ taskId: existingTask.id, file: e.target.files[0] });
+    }
+  };
 
   const handleAddSubTask = () => {
     if (newSubTaskTitle.trim() && existingTask) {
@@ -323,6 +330,41 @@ export function TaskDetailsModal({ isOpen, onClose, taskId }: TaskDetailsModalPr
                   <Button type="button" variant="secondary" size="icon" onClick={handleAddSubTask}>
                     <Plus className="h-4 w-4" />
                   </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Attachments Section */}
+            {existingTask && (
+              <div className="space-y-3 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium">Attachments</h4>
+                  <label className={`cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                    {isUploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Paperclip className="w-4 h-4 mr-2" />}
+                    Attach File
+                    <input type="file" className="hidden" onChange={handleFileUpload} disabled={isUploading} />
+                  </label>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  {existingTask.attachments?.map((att: any) => (
+                    <a 
+                      key={att.id} 
+                      href={att.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary text-sm transition-colors border"
+                    >
+                      <Paperclip className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="max-w-[150px] truncate">{att.file_name}</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground ml-1" />
+                    </a>
+                  ))}
+                  {(!existingTask.attachments || existingTask.attachments.length === 0) && (
+                    <p className="text-sm text-muted-foreground italic w-full text-center py-2 bg-secondary/20 rounded-md border border-dashed">
+                      No attachments yet.
+                    </p>
+                  )}
                 </div>
               </div>
             )}

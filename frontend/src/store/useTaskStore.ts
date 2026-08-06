@@ -11,6 +11,14 @@ export interface SubTask {
   created_at: string;
 }
 
+export interface Attachment {
+  id: string;
+  task_id: string;
+  file_name: string;
+  file_url: string;
+  created_at: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -23,6 +31,7 @@ export interface Task {
   created_at?: string;
   owner_id?: string;
   subtasks?: SubTask[];
+  attachments?: Attachment[];
 }
 
 interface UIState {

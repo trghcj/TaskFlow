@@ -36,3 +36,39 @@ def send_due_date_reminder(to_email: str, tasks: list):
     except Exception as e:
         print(f"Error sending email: {str(e)}")
         return False
+
+def send_weekly_recap(to_email: str, completed_count: int, streak: int):
+    if not resend.api_key:
+        print("Warning: RESEND_API_KEY not set. Skipping weekly recap email.")
+        return False
+        
+    try:
+        html_content = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #4f46e5;">Your Weekly TaskFlow Recap 🚀</h2>
+            <p>Great job this week! Here is a summary of what you've accomplished:</p>
+            
+            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="margin: 0 0 10px 0;">Weekly Stats</h3>
+                <p style="margin: 5px 0;"><strong>✅ Tasks Completed:</strong> {completed_count}</p>
+                <p style="margin: 5px 0;"><strong>🔥 Current Streak:</strong> {streak} days</p>
+            </div>
+            
+            <p>Keep up the great momentum into next week!</p>
+            <p>Log in to <a href="https://taskflow-ds.vercel.app" style="color: #4f46e5;">TaskFlow</a> to plan your upcoming week.</p>
+        </div>
+        """
+        
+        params = {
+            "from": "TaskFlow <onboarding@resend.dev>",
+            "to": [to_email],
+            "subject": "Your Weekly TaskFlow Recap 🚀",
+            "html": html_content
+        }
+        
+        response = resend.Emails.send(params)
+        print(f"Sent weekly recap to {to_email}: {response}")
+        return True
+    except Exception as e:
+        print(f"Error sending weekly recap: {str(e)}")
+        return False

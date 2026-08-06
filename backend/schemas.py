@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from models import TaskStatus, TaskPriority
 
@@ -51,6 +51,7 @@ class TaskResponse(TaskBase):
     owner_id: str
     created_at: datetime
     subtasks: List[SubTaskResponse] = []
+    attachments: List['AttachmentResponse'] = []
 
     class Config:
         from_attributes = True
