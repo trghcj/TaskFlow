@@ -206,3 +206,42 @@ def update_user_profile(user_update: schemas.UserUpdate, current_user: models.Us
     db.commit()
     db.refresh(current_user)
     return current_user
+
+# AI Endpoints
+import ai_service
+
+@app.post("/api/ai/parse")
+def ai_parse_task(request: schemas.AIParseRequest, current_user: models.User = Depends(get_current_user)):
+    try:
+        parsed_data = ai_service.parse_natural_language_task(request.text)
+        return parsed_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/ai/breakdown", response_model=List[schemas.SubTaskResponse])
+def ai_breakdown_task(request: schemas.AIBreakdownRequest, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        subtasks_titles = ai_service.breakdown_task_into_subtasks(request.title, request.description)
+        
+        # If task_id is provided, save them to the DB
+        created_subtasks = []
+        if request.task_id:
+            # Verify task ownership
+            db_task = db.query(models.Task).filter(models.Task.id == request.task_id, models.Task.owner_id == current_user.id).first()
+            if not db_task:
+                raise HTTPException(status_code=404, detail="Task not found")
+                
+            for title in subtasks_titles:
+                db_subtask = models.SubTask(title=title, task_id=request.task_id)
+                db.add(db_subtask)
+                db.flush()
+                db.refresh(db_subtask)
+                created_subtasks.append(db_subtask)
+            db.commit()
+            return created_subtasks
+            
+        # If no task_id, just return them as dummy objects (useful for UI preview)
+        return [{"id": f"dummy-{i}", "task_id": "dummy", "title": t, "is_completed": False, "created_at": datetime.utcnow()} for i, t in enumerate(subtasks_titles)]
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
