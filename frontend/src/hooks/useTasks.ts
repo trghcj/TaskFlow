@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchTasks, createTask, updateTask, deleteTask, createSubTask, updateSubTask, deleteSubTask } from '@/api/tasks';
+import { fetchTasks, createTask, updateTask, deleteTask, createSubTask, updateSubTask, deleteSubTask, uploadAttachment } from '@/api/tasks';
 import type { Task, SubTask } from '@/store/useTaskStore';
 
 export const useTasks = () => {
@@ -63,6 +63,16 @@ export const useDeleteSubTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteSubTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+};
+
+export const useUploadAttachment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ taskId, file }: { taskId: string; file: File }) => uploadAttachment(taskId, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },

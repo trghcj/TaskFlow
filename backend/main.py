@@ -245,3 +245,27 @@ def ai_breakdown_task(request: schemas.AIBreakdownRequest, current_user: models.
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/tasks/{task_id}/attachments", response_model=schemas.AttachmentResponse)
+def upload_attachment(task_id: str, file: UploadFile = File(...), current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    task = db.query(models.Task).filter(models.Task.id == task_id, models.Task.owner_id == current_user.id).first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    try:
+        # Upload to Cloudinary
+        result = cloudinary.uploader.upload(file.file, folder="taskflow_attachments", resource_type="auto")
+        file_url = result.get("secure_url")
+        
+        # Save to DB
+        db_attachment = models.Attachment(
+            task_id=task_id,
+            file_name=file.filename,
+            file_url=file_url
+        )
+        db.add(db_attachment)
+        db.commit()
+        db.refresh(db_attachment)
+        return db_attachment
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload attachment: {str(e)}")

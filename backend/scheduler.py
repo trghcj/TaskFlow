@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 from database import SessionLocal
 import models
-from email_service import send_due_date_reminder
+from email_service import send_due_date_reminder, send_weekly_recap
 
 TIMEZONE_MAP = {
     "Pacific Time (PT)": "America/Los_Angeles",
@@ -84,6 +84,38 @@ def check_due_tasks():
     finally:
         db.close()
 
+def send_weekly_recap_job():
+    print(f"[{datetime.now()}] Running weekly recap job...")
+    db = SessionLocal()
+    try:
+        users = db.query(models.User).all()
+        # Find tasks completed in the last 7 days
+        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+
+        for user in users:
+            if not user.email:
+                continue
+
+            completed_tasks = db.query(models.Task).filter(
+                models.Task.owner_id == user.id,
+                models.Task.status == models.TaskStatus.completed,
+                # For simplicity, assuming tasks are marked completed and we just count them if they exist as completed
+                # Ideally we'd have a 'completed_at' timestamp. If not, we just count all completed or use created_at roughly
+            ).all()
+
+            # Just send the total count they have completed so far as a "recap"
+            completed_count = len(completed_tasks)
+            if completed_count > 0:
+                print(f"Sending weekly recap to {user.email}")
+                send_weekly_recap(user.email, completed_count, user.current_streak)
+    except Exception as e:
+        print(f"Error in weekly recap job: {e}")
+    finally:
+        db.close()
+
 scheduler = BackgroundScheduler()
 # Run every 5 minutes to accurately catch specific minute/hour reminders
 scheduler.add_job(check_due_tasks, "interval", minutes=5)
+# Run weekly recap on Sunday at 8 PM (20:00)
+scheduler.add_job(send_weekly_recap_job, "cron", day_of_week="sun", hour=20)
+

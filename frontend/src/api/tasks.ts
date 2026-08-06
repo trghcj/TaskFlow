@@ -31,6 +31,26 @@ export const updateSubTask = async (id: string, updates: Partial<SubTask>): Prom
   return data;
 };
 
-export const deleteSubTask = async (id: string): Promise<void> => {
-  await apiClient.delete(`/subtasks/${id}`);
+export const deleteSubTask = async (subtaskId: string): Promise<void> => {
+  await apiClient.delete(`/subtasks/${subtaskId}`);
+};
+
+export interface Attachment {
+  id: string;
+  task_id: string;
+  file_name: string;
+  file_url: string;
+  created_at: string;
+}
+
+export const uploadAttachment = async (taskId: string, file: File): Promise<Attachment> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const { data } = await apiClient.post(`/tasks/${taskId}/attachments`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data;
 };

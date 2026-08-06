@@ -64,6 +64,7 @@ class Task(Base):
 
     owner = relationship("User", back_populates="tasks")
     subtasks = relationship("SubTask", back_populates="task", cascade="all, delete-orphan")
+    attachments = relationship("Attachment", back_populates="task", cascade="all, delete-orphan")
 
 class SubTask(Base):
     __tablename__ = "taskflow_subtask"
@@ -75,6 +76,17 @@ class SubTask(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     task = relationship("Task", back_populates="subtasks")
+
+class Attachment(Base):
+    __tablename__ = "taskflow_attachment"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    task_id = Column(String, ForeignKey("taskflow_task.id"), index=True)
+    file_name = Column(String, nullable=False)
+    file_url = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    task = relationship("Task", back_populates="attachments")
 
 class Notification(Base):
     __tablename__ = "taskflow_notification"
