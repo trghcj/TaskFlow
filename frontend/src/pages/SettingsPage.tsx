@@ -278,6 +278,7 @@ export function SettingsPage() {
                       <SelectItem value="Eastern Time (ET)">Eastern Time (ET)</SelectItem>
                       <SelectItem value="Coordinated Universal Time (UTC)">Coordinated Universal Time (UTC)</SelectItem>
                       <SelectItem value="Central European Time (CET)">Central European Time (CET)</SelectItem>
+                      <SelectItem value="Indian Standard Time (IST)">Indian Standard Time (IST)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

@@ -6,7 +6,8 @@ const TIMEZONE_MAP: Record<string, string> = {
   "Pacific Time (PT)": "America/Los_Angeles",
   "Eastern Time (ET)": "America/New_York",
   "Coordinated Universal Time (UTC)": "UTC",
-  "Central European Time (CET)": "Europe/Paris"
+  "Central European Time (CET)": "Europe/Paris",
+  "Indian Standard Time (IST)": "Asia/Kolkata"
 };
 
 export const formatUserDate = (date: Date | string | number, formatStr: string = 'PP') => {

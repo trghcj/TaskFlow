@@ -1,9 +1,18 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from database import SessionLocal
 import models
 from email_service import send_due_date_reminder
+
+TIMEZONE_MAP = {
+    "Pacific Time (PT)": "America/Los_Angeles",
+    "Eastern Time (ET)": "America/New_York",
+    "Coordinated Universal Time (UTC)": "UTC",
+    "Central European Time (CET)": "Europe/Paris",
+    "Indian Standard Time (IST)": "Asia/Kolkata"
+}
 
 def check_due_tasks():
     print(f"[{datetime.now()}] Running background task check...")
@@ -12,18 +21,21 @@ def check_due_tasks():
         # Find all users who want due date reminders
         settings = db.query(models.UserSettings).filter(models.UserSettings.due_date_reminders == True).all()
         
-        # Render servers run in UTC. Since due times are stored naively in IST (by the user),
-        # we need to convert the current server UTC time to naive IST time for accurate comparison.
         utc_now = datetime.now(timezone.utc)
-        ist_now = utc_now + timedelta(hours=5, minutes=30)
-        now = ist_now.replace(tzinfo=None)
-        
-        tomorrow = now + timedelta(days=1)
         
         for user_setting in settings:
             user = db.query(models.User).filter(models.User.id == user_setting.user_id).first()
             if not user or not user.email:
                 continue
+                
+            # Convert server UTC time to the user's specific timezone as a naive datetime
+            iana_tz = TIMEZONE_MAP.get(user_setting.timezone, "UTC")
+            try:
+                user_tz = ZoneInfo(iana_tz)
+            except Exception:
+                user_tz = timezone.utc
+                
+            now = utc_now.astimezone(user_tz).replace(tzinfo=None)
                 
             # Find tasks for this user that are not completed and haven't had a reminder sent yet
             due_soon_tasks = []
