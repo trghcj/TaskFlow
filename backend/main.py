@@ -372,7 +372,8 @@ def google_callback(code: str, state: str = None, db: Session = Depends(get_db))
             
         if user:
             user.google_access_token = credentials.token
-            user.google_refresh_token = credentials.refresh_token
+            if credentials.refresh_token:
+                user.google_refresh_token = credentials.refresh_token
             user.google_token_expiry = credentials.expiry.isoformat() if credentials.expiry else None
             db.commit()
             
