@@ -336,49 +336,42 @@ def google_login():
 
 @app.get("/auth/google/callback")
 def google_callback(code: str, state: str = None, db: Session = Depends(get_db)):
-    # This endpoint needs a way to know WHICH user is authenticating.
-    # Since this is a redirect from Google, it doesn't have the Bearer token in headers.
-    # But wait, how do we link this to the current TaskFlow user?
-    # Usually, we pass the user ID in the `state` parameter or store it in a cookie before redirecting.
-    
-    # For now, let's assume we decode a JWT from a cookie, OR the frontend passes a token in state.
-    # Let's fetch the token using the code anyway.
-    flow = google_auth_oauthlib.flow.Flow.from_client_config(
-        {
-            "web": {
-                "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
-                "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET"),
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-            }
-        },
-        scopes=["https://www.googleapis.com/auth/calendar.events"]
-    )
-    base_url = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:10000")
-    flow.redirect_uri = f"{base_url}/auth/google/callback"
-    
-    flow.fetch_token(code=code)
-    credentials = flow.credentials
-    
-    # Normally we would save this to the specific user. 
-    # Since we can't extract the user easily from a raw redirect without cookies/state,
-    # A quick hack for single-user dev is just getting the first user, OR 
-    # we expect `state` to contain the user ID (Firebase UID).
-    
-    user = None
-    if state:
-        user = db.query(models.User).filter(models.User.id == state).first()
+    try:
+        flow = google_auth_oauthlib.flow.Flow.from_client_config(
+            {
+                "web": {
+                    "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+                    "client_secret": os.environ.get("GOOGLE_CLIENT_SECRET"),
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                }
+            },
+            scopes=["https://www.googleapis.com/auth/calendar.events"]
+        )
+        base_url = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:10000")
+        flow.redirect_uri = f"{base_url}/auth/google/callback"
         
-    if not user:
-        # Fallback to the first user if state is missing (for testing)
-        user = db.query(models.User).first()
+        flow.fetch_token(code=code)
+        credentials = flow.credentials
         
-    if user:
-        user.google_access_token = credentials.token
-        user.google_refresh_token = credentials.refresh_token
-        user.google_token_expiry = credentials.expiry.isoformat() if credentials.expiry else None
-        db.commit()
-        
-    # Redirect back to the frontend settings page
-    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
-    return RedirectResponse(f"{frontend_url}?google_sync=success")
+        user = None
+        if state:
+            user = db.query(models.User).filter(models.User.id == state).first()
+            
+        if not user:
+            user = db.query(models.User).first()
+            
+        if user:
+            user.google_access_token = credentials.token
+            user.google_refresh_token = credentials.refresh_token
+            user.google_token_expiry = credentials.expiry.isoformat() if credentials.expiry else None
+            db.commit()
+            
+        frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+        return RedirectResponse(f"{frontend_url}?google_sync=success")
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        # Return a simple text response with the error
+        from fastapi.responses import PlainTextResponse
+        return PlainTextResponse(content=f"Error: {str(e)}\n\nTraceback:\n{error_details}", status_code=500)
