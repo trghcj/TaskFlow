@@ -301,6 +301,9 @@ def upload_attachment(task_id: str, file: UploadFile = File(...), current_user: 
         raise HTTPException(status_code=500, detail=f"Failed to upload attachment: {str(e)}")
 
 # --- OAuth Endpoints ---
+# Global state store to hold OAuth code_verifier (since PKCE is enabled by default)
+oauth_state_store = {}
+
 @app.get("/auth/google/login")
 def google_login():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
@@ -314,14 +317,6 @@ def google_login():
         },
         scopes=["https://www.googleapis.com/auth/calendar.events"]
     )
-    # Use a dummy redirect_uri to build the auth_url, the actual redirect will be handled by the client
-    # but Google requires one configured. The client will pass state if needed, or we just rely on standard flow.
-    # Actually, we need to specify exactly the redirect URI we configured in Google Cloud
-    
-    # We can use an env var or a hardcoded one based on the host, for now, let's just 
-    # try to use a relative one if possible, or we might need the frontend to pass it.
-    # We will let the flow guess it or use a default one:
-    # Render sets 'RENDER_EXTERNAL_URL' automatically, let's use it if available.
     base_url = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:10000")
     redirect_uri = f"{base_url}/auth/google/callback"
     flow.redirect_uri = redirect_uri
@@ -332,7 +327,13 @@ def google_login():
         prompt='consent' # Force consent to get refresh token
     )
     
+    # Store the generated code verifier in memory (keyed by the OAuth state)
+    # This is required by PKCE (Proof Key for Code Exchange)
+    if hasattr(flow, 'code_verifier'):
+        oauth_state_store[state] = flow.code_verifier
+        
     return RedirectResponse(authorization_url)
+
 @app.get("/auth/google/callback")
 def google_callback(code: str, state: str = None, db: Session = Depends(get_db)):
     try:
@@ -350,7 +351,16 @@ def google_callback(code: str, state: str = None, db: Session = Depends(get_db))
         base_url = os.environ.get("RENDER_EXTERNAL_URL", "http://localhost:10000")
         flow.redirect_uri = f"{base_url}/auth/google/callback"
         
-        flow.fetch_token(code=code)
+        # Retrieve the code_verifier we saved during /login
+        code_verifier = oauth_state_store.get(state)
+        
+        if code_verifier:
+            flow.fetch_token(code=code, code_verifier=code_verifier)
+            # Clean up the state store
+            del oauth_state_store[state]
+        else:
+            flow.fetch_token(code=code)
+            
         credentials = flow.credentials
         
         user = None
