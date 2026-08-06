@@ -117,3 +117,13 @@ class AIBreakdownRequest(BaseModel):
     task_id: Optional[str] = None
     title: str
     description: Optional[str] = None
+
+class AttachmentResponse(BaseModel):
+    id: str
+    task_id: str
+    file_name: str
+    file_url: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
