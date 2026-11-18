@@ -33,7 +33,7 @@
     "react-i18next": "^17.0.8",
     "react-router-dom": "^7.18.3",
     "recharts": "^3.10.1",
-    "tailwind-merge": "^3.6.0",
+    "tailwind-merge": "^3.7.0",
     "zod": "^4.6.6",
     "zustand": "^5.0.14"
   },
